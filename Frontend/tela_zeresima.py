@@ -34,6 +34,7 @@ class TelaZeresima(QFrame):
         layout.addWidget(titulo_tela_zeresima)
 
         self.data_horario_zeresima = QLabel()
+        self.data_horario_zeresima.setObjectName("zeresima_data")
         layout.addWidget(self.data_horario_zeresima)
 
         self.registrar_horario()
@@ -67,13 +68,13 @@ class TelaZeresima(QFrame):
                 background-color:  #FFFFFF;
             }
 
-            .zeresima_titulo {
+            #zeresima_titulo {
                 color: #000000;
                 font-size: 36px;
                 font-weight: bold;
             }
 
-            #menu_subtitulo {
+            #zeresima_data {
                 color: #000000;
                 font-size: 13px;
                 font-weight: bold;
@@ -103,6 +104,8 @@ class TelaZeresima(QFrame):
             }
 
         """
+
+        self.setStyleSheet(ESTILO_MENU)
 
     def registrar_horario(self):
         horario_zeresima_emitida = QDateTime.currentDateTime()
