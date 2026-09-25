@@ -30,6 +30,7 @@ class TelaZeresima(QFrame):
         layout.setContentsMargins(25, 25, 25, 25)
 
         titulo_tela_zeresima = QLabel("ZERÉSIMA")
+        titulo_tela_zeresima.setObjectName("zeresima_titulo")
         layout.addWidget(titulo_tela_zeresima)
 
         self.data_horario_zeresima = QLabel()
@@ -54,6 +55,54 @@ class TelaZeresima(QFrame):
 
         eleitores_aptos_zeresima = QLabel("Eleitores aptos:")
         layout.addWidget(eleitores_aptos_zeresima)
+
+        ESTILO_MENU = """
+
+            QWidget {
+                font-family: Arial;
+                font-size: 16px;
+            }
+
+            #tela_menu {
+                background-color:  #FFFFFF;
+            }
+
+            .zeresima_titulo {
+                color: #000000;
+                font-size: 36px;
+                font-weight: bold;
+            }
+
+            #menu_subtitulo {
+                color: #000000;
+                font-size: 13px;
+                font-weight: bold;
+                padding-top: 6px;
+                padding-bottom: 10px;
+            }
+
+            #menu_rodape {
+                color: #4d5a75;
+                font-size: 12px;
+            }
+
+            #menu_botao {
+                background-color: #FFFFFF;
+                color: #000000;
+                border: 1px solid #2c3648;
+                border-radius: 10px;
+                font-size: 18px;
+                font-weight: 600;
+                text-align: left;
+                padding-left: 26px;
+            }
+
+            #menu_botao:hover {
+                background-color: #F8F8FF;
+                border-color: #3d4a63;
+            }
+
+        """
 
     def registrar_horario(self):
         horario_zeresima_emitida = QDateTime.currentDateTime()
