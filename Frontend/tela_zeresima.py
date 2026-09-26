@@ -39,29 +39,43 @@ class TelaZeresima(QFrame):
 
         self.registrar_horario()
 
-        layout.addStretch()
+        info_zeresima = QWidget()
+        info_zeresima.setObjectName("info_zeresima")
+        layout_info = QVBoxLayout(info_zeresima)
+        layout_info.setSpacing(1)
+        layout_info.setAlignment(Qt.AlignTop)
+        layout_info.setContentsMargins(25, 25, 25, 25)
         
         candidatos_zeresima = QLabel("Candidatos:")
-        layout.addWidget(candidatos_zeresima)
+        layout_info.addWidget(candidatos_zeresima)
 
         layout.addStretch()
 
         votos_em_branco_zeresima = QLabel("Votos em branco:")
-        layout.addWidget(votos_em_branco_zeresima)
+        layout_info.addWidget(votos_em_branco_zeresima)
 
         votos_em_nulo_zeresima = QLabel("Votos Nulos:")
-        layout.addWidget(votos_em_nulo_zeresima)
+        layout_info.addWidget(votos_em_nulo_zeresima)
 
         layout.addStretch()
 
         eleitores_aptos_zeresima = QLabel("Eleitores aptos:")
-        layout.addWidget(eleitores_aptos_zeresima)
+        layout_info.addWidget(eleitores_aptos_zeresima)
+
+        layout.addWidget(info_zeresima)
 
         ESTILO_MENU = """
 
             QWidget {
                 font-family: Arial;
                 font-size: 16px;
+            }
+
+            #info_zeresima {
+                border-width: 1px;
+                border-style: solid;
+                border-color: black;
+                border-radius: 5px;
             }
 
             #tela_menu {
