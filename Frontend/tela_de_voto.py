@@ -1,10 +1,15 @@
-import sys
+import sys, os
 from PySide6.QtWidgets import (
     QApplication, QWidget, QLabel, QPushButton,
     QGridLayout, QVBoxLayout, QHBoxLayout, QMessageBox
 )
 from PySide6.QtGui import QPixmap, QFont
 from PySide6.QtCore import Qt
+
+from Backend.confirmar import confirmar
+from Backend.corrigir import corrigir
+from Backend.voto_branco import voto_branco
+from Frontend.candidados import candidatos
 
 ESTILOS = """
     QLabel#titulo {
@@ -17,9 +22,9 @@ ESTILOS = """
     }
 
     QPushButton#btn-branco {
-        background: white;
+        background-color: white;
         color: black;
-        border: 2px solid #618CA;
+        border: 2px solid #618CAA;
     }
 
     QPushButton#btn-corrige {
@@ -31,8 +36,8 @@ ESTILOS = """
     }
 
     QWidget#teclado-widget {
-        background: white;
-        border: 2px solid #618CA;
+        background-color: white;
+        border: 2px solid #618CAA;
     }
 
     QLabel#foto-label {
@@ -47,24 +52,6 @@ class UrnaEletronica(QWidget):
         self.setWindowTitle("Urna Eletrônica")
         self.setFixedSize(800, 500)
 
-        # Candidatos fictícios
-        self.candidatos = {
-            "01": {
-                "nome": "Evelyn Palbueno",
-                "partido": "Professor",
-                "foto": "fotos/candidato1.jpg"
-            },
-            "02": {
-                "nome": "Mauricio de Souza",
-                "partido": "Desenvolvedor de Jogos",
-                "foto": "fotos/candidato2.jpg"
-            },
-            "03": {
-                "nome": "Ederson",
-                "partido": "Desenvolvedor de Software",
-                "foto": "fotos/candidato3.jpg"
-            }
-        }
             
         self.votos = {
             "01": 0,
@@ -79,7 +66,7 @@ class UrnaEletronica(QWidget):
         self.criar_interface()
 
     def criar_interface(self):
-        app.setStyleSheet(ESTILOS)
+        self.setStyleSheet(ESTILOS)
         layout_principal = QHBoxLayout()
 
         # Tela da urna
@@ -133,17 +120,17 @@ class UrnaEletronica(QWidget):
         branco = QPushButton("BRANCO")
         branco.setFixedSize(70, 50)
         branco.setObjectName("btn-branco")
-        # branco.clicked.connect(self.voto_branco)
+        branco.clicked.connect(lambda: voto_branco(self))
 
         corrige = QPushButton("CORRIGE")
         corrige.setFixedSize(70, 50)
         corrige.setObjectName("btn-corrige")
-        # corrige.clicked.connect(self.corrigir)
+        corrige.clicked.connect(lambda: corrigir(self))
 
         confirma = QPushButton("CONFIRMA")
         confirma.setFixedSize(70, 50)
         confirma.setObjectName("btn-confirma")
-        # confirma.clicked.connect(self.confirmar)
+        confirma.clicked.connect(lambda: confirmar(self))
 
         teclado.addWidget(branco, 4, 0)
         teclado.addWidget(corrige, 4, 1)
@@ -159,7 +146,29 @@ class UrnaEletronica(QWidget):
 
         self.setLayout(layout_principal)
 
-app = QApplication(sys.argv)
-janela = UrnaEletronica()
-janela.show()
-sys.exit(app.exec())
+    def digitar_numero(self, numero):
+        if len(self.numero_digitado) < 2:
+            self.numero_digitado += numero
+            self.numero_label.setText(self.numero_digitado)
+
+            if len(self.numero_digitado) == 2:
+                self.mostrar_candidato()
+
+    def mostrar_candidato(self):
+        if self.numero_digitado in candidatos:
+            candidato = candidatos[self.numero_digitado]
+
+            self.nome_label.setText(candidato["nome"])
+            self.partido_label.setText(candidato["partido"])
+
+            pixmap = QPixmap(candidato["foto"])
+            self.foto_label.setPixmap(
+                pixmap.scaled(
+                    self.foto_label.size(),
+                    Qt.KeepAspectRatio
+                )
+            )
+        else:
+            self.nome_label.setText("VOTO NULO")
+            self.partido_label.setText("")
+            self.foto_label.clear()
