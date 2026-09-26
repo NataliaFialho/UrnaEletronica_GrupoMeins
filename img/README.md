@@ -1,0 +1,1 @@
+Pasta para adicionar os ícones e imagens do projeto
