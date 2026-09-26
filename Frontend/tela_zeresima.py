@@ -49,7 +49,7 @@ class TelaZeresima(QFrame):
         candidatos_zeresima = QLabel("Candidatos:")
         layout_info.addWidget(candidatos_zeresima)
 
-        layout.addStretch()
+        layout_info.addStretch()
 
         votos_em_branco_zeresima = QLabel("Votos em branco:")
         layout_info.addWidget(votos_em_branco_zeresima)
@@ -57,7 +57,7 @@ class TelaZeresima(QFrame):
         votos_em_nulo_zeresima = QLabel("Votos Nulos:")
         layout_info.addWidget(votos_em_nulo_zeresima)
 
-        layout.addStretch()
+        layout_info.addStretch()
 
         eleitores_aptos_zeresima = QLabel("Eleitores aptos:")
         layout_info.addWidget(eleitores_aptos_zeresima)
