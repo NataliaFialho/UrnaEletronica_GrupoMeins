@@ -12,12 +12,14 @@ ESTILOS = """
     }
 
     QPushButton#numericos {
-        background-color: #444;
-        color: white;
+        background-color: #E8EDF3;
+        color: black;
     }
 
     QPushButton#btn-branco {
-        background-color: white;
+        background: white;
+        color: black;
+        border: 2px solid #618CA;
     }
 
     QPushButton#btn-corrige {
@@ -29,7 +31,8 @@ ESTILOS = """
     }
 
     QWidget#teclado-widget {
-        background-color: #444;
+        background: white;
+        border: 2px solid #618CA;
     }
 
     QLabel#foto-label {
@@ -76,6 +79,7 @@ class UrnaEletronica(QWidget):
         self.criar_interface()
 
     def criar_interface(self):
+        app.setStyleSheet(ESTILOS)
         layout_principal = QHBoxLayout()
 
         # Tela da urna
@@ -156,7 +160,6 @@ class UrnaEletronica(QWidget):
         self.setLayout(layout_principal)
 
 app = QApplication(sys.argv)
-app.setStyleSheet(ESTILOS)
 janela = UrnaEletronica()
 janela.show()
 sys.exit(app.exec())
