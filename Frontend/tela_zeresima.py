@@ -1,7 +1,6 @@
 import sys, os
-
 from PySide6.QtCore import Qt, QDateTime
-from PySide6.QtGui import QFont, QColor, QIcon
+from PySide6.QtGui import QFont, QColor, QIcon, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
     QWidget,
@@ -23,15 +22,35 @@ class TelaZeresima(QFrame):
 
         self.setFixedSize(800, 500)
         self.setWindowTitle("Relatório Inicial (Zerésima)")
+        self.setWindowIcon(QIcon("img/icone_zeresima_preto.png"))
 
         layout = QVBoxLayout(self)
         layout.setSpacing(1)
         layout.setAlignment(Qt.AlignTop)
         layout.setContentsMargins(25, 25, 25, 25)
 
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        icone_path = os.path.join(BASE_DIR, "..", "img", "icone_zeresima_preto.png")
+
+        container = QHBoxLayout()
+        container.setSpacing(8)
+        container.setContentsMargins(0, 0, 0, 0)
+
+        icone_tela_zeresima = QLabel()
+        icone_tela_zeresima.setFixedSize(56,56)
+        icone_tela_zeresima.setContentsMargins(0, 0, 0, 0)
+        icone_tela_zeresima.setPixmap(QPixmap(icone_path).scaled(56, 56, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+
         titulo_tela_zeresima = QLabel("ZERÉSIMA")
         titulo_tela_zeresima.setObjectName("zeresima_titulo")
-        layout.addWidget(titulo_tela_zeresima)
+
+        container.addWidget(icone_tela_zeresima)
+        container.addWidget(titulo_tela_zeresima)
+
+        layout.addLayout(container)
+
+        titulo_tela_zeresima = QLabel("ZERÉSIMA")
+        titulo_tela_zeresima.setObjectName("zeresima_titulo")
 
         self.data_horario_zeresima = QLabel()
         self.data_horario_zeresima.setObjectName("zeresima_data")
