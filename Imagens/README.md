@@ -1,0 +1,1 @@
+Aqui ficam as imagens e icones utilizadas no sistema.
