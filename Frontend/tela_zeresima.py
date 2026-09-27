@@ -16,6 +16,62 @@ from PySide6.QtWidgets import (
     QFrame,
 )
 
+ESTILO_MENU = """
+
+    QWidget {
+        font-family: Arial;
+        font-size: 16px;
+    }
+
+    #info_zeresima {
+        border-width: 1px;
+        border-style: solid;
+        border-color: black;
+        border-radius: 5px;
+    }
+
+    #tela_menu {
+        background-color:  #FFFFFF;
+    }
+
+    #zeresima_titulo {
+        color: #000000;
+        font-size: 36px;
+        font-weight: bold;
+    }
+
+    #zeresima_data {
+        color: #000000;
+        font-size: 13px;
+        font-weight: bold;
+        padding-top: 6px;
+        padding-bottom: 10px;
+    }
+
+    #menu_rodape {
+        color: #4d5a75;
+        font-size: 12px;
+    }
+
+    #menu_botao {
+        background-color: #FFFFFF;
+        color: #000000;
+        border: 1px solid #2c3648;
+        border-radius: 10px;
+        font-size: 18px;
+        font-weight: 600;
+        text-align: left;
+        padding-left: 26px;
+        text-align: center;
+    }
+
+    #menu_botao:hover {
+        background-color: #F8F8FF;
+        border-color: #3d4a63;
+    }
+
+"""
+
 class TelaZeresima(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -25,7 +81,7 @@ class TelaZeresima(QFrame):
         self.setWindowIcon(QIcon("Imagens/icone_zeresima_preto.png"))
 
         layout = QVBoxLayout(self)
-        layout.setSpacing(1)
+        layout.setSpacing(10)
         layout.setAlignment(Qt.AlignTop)
         layout.setContentsMargins(25, 25, 25, 25)
 
@@ -83,60 +139,9 @@ class TelaZeresima(QFrame):
 
         layout.addWidget(info_zeresima)
 
-        ESTILO_MENU = """
-
-            QWidget {
-                font-family: Arial;
-                font-size: 16px;
-            }
-
-            #info_zeresima {
-                border-width: 1px;
-                border-style: solid;
-                border-color: black;
-                border-radius: 5px;
-            }
-
-            #tela_menu {
-                background-color:  #FFFFFF;
-            }
-
-            #zeresima_titulo {
-                color: #000000;
-                font-size: 36px;
-                font-weight: bold;
-            }
-
-            #zeresima_data {
-                color: #000000;
-                font-size: 13px;
-                font-weight: bold;
-                padding-top: 6px;
-                padding-bottom: 10px;
-            }
-
-            #menu_rodape {
-                color: #4d5a75;
-                font-size: 12px;
-            }
-
-            #menu_botao {
-                background-color: #FFFFFF;
-                color: #000000;
-                border: 1px solid #2c3648;
-                border-radius: 10px;
-                font-size: 18px;
-                font-weight: 600;
-                text-align: left;
-                padding-left: 26px;
-            }
-
-            #menu_botao:hover {
-                background-color: #F8F8FF;
-                border-color: #3d4a63;
-            }
-
-        """
+        botao_voltar_ao_menu = QPushButton("Voltar ao Menu")
+        botao_voltar_ao_menu.setObjectName("menu_botao")
+        layout.addWidget(botao_voltar_ao_menu)
 
         self.setStyleSheet(ESTILO_MENU)
 
