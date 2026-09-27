@@ -22,7 +22,7 @@ class TelaZeresima(QFrame):
 
         self.setFixedSize(800, 500)
         self.setWindowTitle("Relatório Inicial (Zerésima)")
-        self.setWindowIcon(QIcon("img/icone_zeresima_preto.png"))
+        self.setWindowIcon(QIcon("Imagens/icone_zeresima_preto.png"))
 
         layout = QVBoxLayout(self)
         layout.setSpacing(1)
@@ -30,7 +30,7 @@ class TelaZeresima(QFrame):
         layout.setContentsMargins(25, 25, 25, 25)
 
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-        icone_path = os.path.join(BASE_DIR, "..", "img", "icone_zeresima_preto.png")
+        icone_path = os.path.join(BASE_DIR, "..", "Imagens", "icone_zeresima_preto.png")
 
         container = QHBoxLayout()
         container.setSpacing(8)
