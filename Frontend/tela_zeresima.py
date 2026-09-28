@@ -14,8 +14,12 @@ from PySide6.QtWidgets import (
     QTableWidgetItem,
     QHeaderView,
     QFrame,
-    QDialog
+    QDialog,
+    QScrollArea
 )
+
+from Backend.candidatos import candidatos
+from Backend.eleitor import eleitores
 
 ESTILO_MENU = """
     QWidget {
@@ -69,6 +73,25 @@ ESTILO_MENU = """
         background-color: #F8F8FF;
         border-color: #3d4a63;
     }
+
+    #info_zeresima_scroll {
+        border-width: 1px;
+        border-style: solid;
+        border-color: black;
+        border-radius: 5px;
+    }
+ 
+    QScrollArea {
+        background: transparent;
+    }
+ 
+    QScrollArea > QWidget > QWidget {
+        background: transparent;
+    }
+ 
+    #zeresima_conteudo {
+        background: transparent;
+    }
 """
 
 class TelaZeresima(QDialog):
@@ -104,9 +127,6 @@ class TelaZeresima(QDialog):
 
         layout.addLayout(container)
 
-        titulo_tela_zeresima = QLabel("ZERÉSIMA")
-        titulo_tela_zeresima.setObjectName("zeresima_titulo")
-
         self.data_horario_zeresima = QLabel()
         self.data_horario_zeresima.setObjectName("zeresima_data")
         layout.addWidget(self.data_horario_zeresima)
@@ -115,13 +135,21 @@ class TelaZeresima(QDialog):
 
         info_zeresima = QWidget()
         info_zeresima.setObjectName("info_zeresima")
-        layout_info = QVBoxLayout(info_zeresima)
+
+        conteudo_zeresima = QWidget()
+        conteudo_zeresima.setObjectName ("zeresima_conteudo")
+        conteudo_zeresima.setMinimumHeight (450)
+
+        layout_info = QVBoxLayout(conteudo_zeresima)
         layout_info.setSpacing(1)
         layout_info.setAlignment(Qt.AlignTop)
         layout_info.setContentsMargins(25, 25, 25, 25)
-        
-        candidatos_zeresima = QLabel("Candidatos:")
-        layout_info.addWidget(candidatos_zeresima)
+
+        self.candidatos_zeresima = QLabel()
+        self.candidatos_zeresima.setWordWrap(True)
+        layout_info.addWidget(self.candidatos_zeresima)
+
+        self.atualizar_candidatos(candidatos)
 
         layout_info.addStretch()
 
@@ -133,8 +161,25 @@ class TelaZeresima(QDialog):
 
         layout_info.addStretch()
 
-        eleitores_aptos_zeresima = QLabel("Eleitores aptos:")
-        layout_info.addWidget(eleitores_aptos_zeresima)
+        self.eleitores_aptos_zeresima = QLabel()
+        layout_info.addWidget(self.eleitores_aptos_zeresima)
+
+        self.eleitores_nao_votaram = QLabel()
+        layout_info.addWidget(self.eleitores_nao_votaram)
+
+        self.eleitores_que_votaram = QLabel()
+        layout_info.addWidget(self.eleitores_que_votaram)
+
+
+        self.atualizar_eleitores(eleitores)
+
+        scroll_zeresima = QScrollArea()
+        scroll_zeresima.setObjectName ("info_zeresima_scroll")
+        scroll_zeresima.setWidgetResizable(True)
+        scroll_zeresima.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        scroll_zeresima.setWidget(conteudo_zeresima)
+
+        layout.addWidget(scroll_zeresima, 1)
 
         layout.addWidget(info_zeresima)
 
@@ -149,8 +194,31 @@ class TelaZeresima(QDialog):
         horario_formatado = horario_zeresima_emitida.toString("dd/MM/yyyy, HH:mm:ss")
         self.data_horario_zeresima.setText(f"Data e Horário da Emissão: {horario_formatado}")
 
+    def atualizar_candidatos(self, candidatos):
+        texto = "Candidatos:\n\n"
+
+        for numero, dados in candidatos.items():
+            texto += (
+                f"{numero} - {dados['nome']} "
+                f"({dados['partido']})\n"
+            )
+
+        self.candidatos_zeresima.setText(texto)
+
+    def atualizar_eleitores(self, eleitores):
+        texto = f"Eleitores aptos: {len(eleitores)}\n\n"
+
+        for titulo, dados in eleitores.items():
+            status = "Votou" if dados["votou"] else "Não votou"
+
+            texto += (
+                f"{titulo} - {dados['nome']} "
+                f"({status})\n"
+            )
+
+        self.eleitores_aptos_zeresima.setText(texto)
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = TelaZeresima()
-    window.show()
-    sys.exit(app.exec())
+    janela = TelaZeresima()
+    janela.exec()

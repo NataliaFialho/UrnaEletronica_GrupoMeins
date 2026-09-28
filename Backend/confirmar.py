@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QMessageBox
 from Backend.corrigir import corrigir
-from Frontend.candidados import candidatos
+from Frontend.candidatos import candidatos
 
 def confirmar(urna):
     if urna.numero_digitado in candidatos:
