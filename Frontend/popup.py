@@ -50,12 +50,7 @@ ESTILO_POPUP = """
 
 
 class PopUps(QMessageBox):
-    """
-    Classe responsável pelos popups do sistema.
-
-    Ela herda de QMessageBox, então podem ser usados todoss os recursos de um QMessageBox normalmente.
-    """
-
+   
     def __init__(
         self,
         parent=None,
@@ -91,8 +86,6 @@ class PopUps(QMessageBox):
 
         popup.exec()
 
-
-
     @classmethod
     def informacao(cls, parent, titulo, mensagem):
 
@@ -107,36 +100,15 @@ class PopUps(QMessageBox):
         popup.exec()
 
 
-
     @classmethod
-    def erro(cls, parent, titulo, mensagem):
+    def urna_fechada(cls, parent):
 
-        popup = cls(
+        cls.informacao(
             parent,
-            titulo,
-            mensagem,
-            QMessageBox.Critical,
-            QMessageBox.Ok
+            "Sistema Eleitoral",
+            "Votação encerrada!\n"
+            
         )
-
-        popup.exec()
-
-
-
-    @classmethod
-    def confirmar(cls, parent, titulo, mensagem):
-
-        popup = cls(
-            parent,
-            titulo,
-            mensagem,
-            QMessageBox.Question,
-            QMessageBox.Yes | QMessageBox.No
-        )
-
-        resposta = popup.exec()
-
-        return resposta == QMessageBox.Yes
 
 
     @classmethod
