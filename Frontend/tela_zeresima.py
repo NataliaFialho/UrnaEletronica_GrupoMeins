@@ -1,6 +1,6 @@
 import sys, os
 from PySide6.QtCore import Qt, QDateTime
-from PySide6.QtGui import QFont, QColor, QIcon, QPixmap
+from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
     QWidget,
@@ -8,12 +8,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QPushButton,
-    QComboBox,
-    QLineEdit,
-    QTableWidget,
-    QTableWidgetItem,
-    QHeaderView,
-    QFrame,
+    QFrame
 )
 
 ESTILO_MENU = """
@@ -69,7 +64,6 @@ ESTILO_MENU = """
         background-color: #F8F8FF;
         border-color: #3d4a63;
     }
-
 """
 
 class TelaZeresima(QFrame):
@@ -149,7 +143,6 @@ class TelaZeresima(QFrame):
         horario_zeresima_emitida = QDateTime.currentDateTime()
         horario_formatado = horario_zeresima_emitida.toString("dd/MM/yyyy, HH:mm:ss")
         self.data_horario_zeresima.setText(f"Data e Horário da Emissão: {horario_formatado}")
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

@@ -1,6 +1,6 @@
 import sys, os
 from PySide6.QtCore import Qt, QDateTime
-from PySide6.QtGui import QFont, QColor, QIcon, QPixmap
+from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
     QWidget,
@@ -8,12 +8,9 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QPushButton,
-    QComboBox,
-    QLineEdit,
-    QTableWidget,
-    QTableWidgetItem,
-    QHeaderView,
     QFrame,
+    QScrollArea,
+    QDialog
 )
 
 ESTILO_MENU = """
@@ -28,6 +25,18 @@ ESTILO_MENU = """
         border-style: solid;
         border-color: black;
         border-radius: 5px;
+    }
+
+    QScrollArea {
+        background: transparent;
+    }
+
+    QScrollArea > QWidget > QWidget {
+        background: transparent;
+    }
+
+    #conteudo_boletim {
+        background: transparent;
     }
 
     #tela_menu {
@@ -60,7 +69,6 @@ ESTILO_MENU = """
         border-radius: 10px;
         font-size: 18px;
         font-weight: 600;
-        text-align: left;
         padding-left: 26px;
         text-align: center;
     }
@@ -72,7 +80,7 @@ ESTILO_MENU = """
 
 """
 
-class TelaZeresima(QFrame):
+class TelaBoletimUrna(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -82,31 +90,30 @@ class TelaZeresima(QFrame):
 
         layout = QVBoxLayout(self)
         layout.setSpacing(10)
-        layout.setAlignment(Qt.AlignTop)
         layout.setContentsMargins(25, 25, 25, 25)
 
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
         icone_path = os.path.join(BASE_DIR, "..", "Imagens", "icone_boletim_urna.png")
 
+        # ---------- Título com ícone ----------
         container = QHBoxLayout()
         container.setSpacing(12)
         container.setContentsMargins(0, 0, 0, 0)
 
         icone_tela_boletim_urna = QLabel()
-        icone_tela_boletim_urna.setFixedSize(56,56)
-        icone_tela_boletim_urna.setContentsMargins(0, 0, 0, 0)
-        icone_tela_boletim_urna.setPixmap(QPixmap(icone_path).scaled(56, 56, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        icone_tela_boletim_urna.setFixedSize(56, 56)
+        icone_tela_boletim_urna.setPixmap(
+            QPixmap(icone_path).scaled(56, 56, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        )
 
         titulo_tela_boletim_urna = QLabel("BOLETIM DE URNA")
         titulo_tela_boletim_urna.setObjectName("boletim_urna_titulo")
 
         container.addWidget(icone_tela_boletim_urna)
         container.addWidget(titulo_tela_boletim_urna)
+        container.addStretch()
 
         layout.addLayout(container)
-
-        titulo_tela_boletim_urna = QLabel("ZERÉSIMA")
-        titulo_tela_boletim_urna.setObjectName("boletim_urna_titulo")
 
         self.data_horario_boletim_urna = QLabel()
         self.data_horario_boletim_urna.setObjectName("zeresima_data")
@@ -114,17 +121,17 @@ class TelaZeresima(QFrame):
 
         self.registrar_horario()
 
-        info_boletim_urna = QWidget()
-        info_boletim_urna.setObjectName("info_boletim_urna")
-        layout_info = QVBoxLayout(info_boletim_urna)
+        conteudo_boletim = QWidget()
+        conteudo_boletim.setObjectName("conteudo_boletim")
+        conteudo_boletim.setMinimumHeight(450)
+
+        layout_info = QVBoxLayout(conteudo_boletim)
         layout_info.setSpacing(1)
         layout_info.setAlignment(Qt.AlignTop)
         layout_info.setContentsMargins(25, 25, 25, 25)
-        
+
         vencedor_boletim_urna = QLabel("Candidato vencedor: ")
         layout_info.addWidget(vencedor_boletim_urna)
-
-        layout.addStretch()
 
         candidatos_boletim_urna = QLabel("Votos por candidato: ")
         layout_info.addWidget(candidatos_boletim_urna)
@@ -158,10 +165,16 @@ class TelaZeresima(QFrame):
 
         layout_info.addStretch()
 
-        eleitores_aptos_boletim_urna = QLabel("Situação dos eleitores:")
-        layout_info.addWidget(eleitores_aptos_boletim_urna)
+        situacao_eleitores_boletim_urna = QLabel("Situação dos eleitores:")
+        layout_info.addWidget(situacao_eleitores_boletim_urna)
 
-        layout.addWidget(info_boletim_urna, 1)
+        scroll_boletim_urna = QScrollArea()
+        scroll_boletim_urna.setObjectName("info_boletim_urna")
+        scroll_boletim_urna.setWidgetResizable(True)
+        scroll_boletim_urna.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        scroll_boletim_urna.setWidget(conteudo_boletim) 
+
+        layout.addWidget(scroll_boletim_urna, 1)
 
         botao_voltar_ao_menu = QPushButton("Voltar ao Menu")
         botao_voltar_ao_menu.setObjectName("menu_botao")
@@ -170,13 +183,13 @@ class TelaZeresima(QFrame):
         self.setStyleSheet(ESTILO_MENU)
 
     def registrar_horario(self):
-        horario_zeresima_emitida = QDateTime.currentDateTime()
-        horario_formatado = horario_zeresima_emitida.toString("dd/MM/yyyy, HH:mm:ss")
+        horario_emitido = QDateTime.currentDateTime()
+        horario_formatado = horario_emitido.toString("dd/MM/yyyy, HH:mm:ss")
         self.data_horario_boletim_urna.setText(f"Data e Horário da Emissão: {horario_formatado}")
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = TelaZeresima()
+    window = TelaBoletimUrna()
     window.show()
     sys.exit(app.exec())
