@@ -188,7 +188,7 @@ class TelaConfirmacaoCandidato(QWidget):
         candidato escolhido, por exemplo:
 
             tela_de_voto.candidato_selecionado.connect(
-                tela_confirmacao.exibir_candidato
+                tela_confirmacao_candidato.exibir_candidato
             )
 
         onde `candidato_selecionado = Signal(str, dict)` é emitido pela
