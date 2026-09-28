@@ -64,7 +64,6 @@ ESTILO_MENU = """
         background-color: #F8F8FF;
         border-color: #3d4a63;
     }
-
 """
 
 class TelaZeresima(QFrame):
@@ -144,7 +143,6 @@ class TelaZeresima(QFrame):
         horario_zeresima_emitida = QDateTime.currentDateTime()
         horario_formatado = horario_zeresima_emitida.toString("dd/MM/yyyy, HH:mm:ss")
         self.data_horario_zeresima.setText(f"Data e Horário da Emissão: {horario_formatado}")
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
