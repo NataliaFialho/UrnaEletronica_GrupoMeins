@@ -1,5 +1,5 @@
 import sys, os
-from PySide6.QtCore import Qt, QDateTime
+from PySide6.QtCore import Qt, QDateTime, Signal
 from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
@@ -9,8 +9,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QPushButton,
     QFrame,
-    QScrollArea,
-    QDialog
+    QScrollArea
 )
 
 ESTILO_MENU = """
@@ -80,20 +79,22 @@ ESTILO_MENU = """
 
 """
 
-class TelaBoletimUrna(QDialog):
+
+class TelaBoletimUrna(QWidget):
+
+    boletim_confirmado = Signal()
+
     def __init__(self, parent=None):
         super().__init__(parent)
-
-        self.setFixedSize(800, 500)
-        self.setWindowTitle("Boletim de Urna")
-        self.setWindowIcon(QIcon("Imagens/icone_boletim_urna.png"))
 
         layout = QVBoxLayout(self)
         layout.setSpacing(10)
         layout.setContentsMargins(25, 25, 25, 25)
 
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-        icone_path = os.path.join(BASE_DIR, "..", "Imagens", "icone_boletim_urna.png")
+        icone_path = os.path.join(
+            BASE_DIR, "..", "Imagens", "icone_boletim_urna.png"
+        )
 
         # ---------- Título com ícone ----------
         container = QHBoxLayout()
@@ -103,7 +104,12 @@ class TelaBoletimUrna(QDialog):
         icone_tela_boletim_urna = QLabel()
         icone_tela_boletim_urna.setFixedSize(56, 56)
         icone_tela_boletim_urna.setPixmap(
-            QPixmap(icone_path).scaled(56, 56, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            QPixmap(icone_path).scaled(
+                56,
+                56,
+                Qt.KeepAspectRatio,
+                Qt.SmoothTransformation
+            )
         )
 
         titulo_tela_boletim_urna = QLabel("BOLETIM DE URNA")
@@ -171,8 +177,10 @@ class TelaBoletimUrna(QDialog):
         scroll_boletim_urna = QScrollArea()
         scroll_boletim_urna.setObjectName("info_boletim_urna")
         scroll_boletim_urna.setWidgetResizable(True)
-        scroll_boletim_urna.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        scroll_boletim_urna.setWidget(conteudo_boletim) 
+        scroll_boletim_urna.setHorizontalScrollBarPolicy(
+            Qt.ScrollBarAlwaysOff
+        )
+        scroll_boletim_urna.setWidget(conteudo_boletim)
 
         layout.addWidget(scroll_boletim_urna, 1)
 
@@ -182,10 +190,19 @@ class TelaBoletimUrna(QDialog):
 
         self.setStyleSheet(ESTILO_MENU)
 
+        botao_voltar_ao_menu.clicked.connect(self.voltar_ao_menu)
+
     def registrar_horario(self):
         horario_emitido = QDateTime.currentDateTime()
-        horario_formatado = horario_emitido.toString("dd/MM/yyyy, HH:mm:ss")
-        self.data_horario_boletim_urna.setText(f"Data e Horário da Emissão: {horario_formatado}")
+        horario_formatado = horario_emitido.toString(
+            "dd/MM/yyyy, HH:mm:ss"
+        )
+        self.data_horario_boletim_urna.setText(
+            f"Data e Horário da Emissão: {horario_formatado}"
+        )
+
+    def voltar_ao_menu(self):
+        self.boletim_confirmado.emit()
 
 
 if __name__ == "__main__":
