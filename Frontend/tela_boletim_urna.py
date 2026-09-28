@@ -23,7 +23,7 @@ ESTILO_MENU = """
         font-size: 16px;
     }
 
-    #info_zeresima {
+    #info_boletim_urna {
         border-width: 1px;
         border-style: solid;
         border-color: black;
@@ -34,7 +34,7 @@ ESTILO_MENU = """
         background-color:  #FFFFFF;
     }
 
-    #zeresima_titulo {
+    #boletim_urna_titulo {
         color: #000000;
         font-size: 36px;
         font-weight: bold;
@@ -77,8 +77,8 @@ class TelaZeresima(QFrame):
         super().__init__(parent)
 
         self.setFixedSize(800, 500)
-        self.setWindowTitle("Relatório Inicial (Zerésima)")
-        self.setWindowIcon(QIcon("Imagens/icone_zeresima_preto.png"))
+        self.setWindowTitle("Boletim de Urna")
+        self.setWindowIcon(QIcon("Imagens/icone_boletim_urna.png"))
 
         layout = QVBoxLayout(self)
         layout.setSpacing(10)
@@ -86,58 +86,82 @@ class TelaZeresima(QFrame):
         layout.setContentsMargins(25, 25, 25, 25)
 
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-        icone_path = os.path.join(BASE_DIR, "..", "Imagens", "icone_zeresima_preto.png")
+        icone_path = os.path.join(BASE_DIR, "..", "Imagens", "icone_boletim_urna.png")
 
         container = QHBoxLayout()
-        container.setSpacing(8)
+        container.setSpacing(12)
         container.setContentsMargins(0, 0, 0, 0)
 
-        icone_tela_zeresima = QLabel()
-        icone_tela_zeresima.setFixedSize(56,56)
-        icone_tela_zeresima.setContentsMargins(0, 0, 0, 0)
-        icone_tela_zeresima.setPixmap(QPixmap(icone_path).scaled(56, 56, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        icone_tela_boletim_urna = QLabel()
+        icone_tela_boletim_urna.setFixedSize(56,56)
+        icone_tela_boletim_urna.setContentsMargins(0, 0, 0, 0)
+        icone_tela_boletim_urna.setPixmap(QPixmap(icone_path).scaled(56, 56, Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
-        titulo_tela_zeresima = QLabel("ZERÉSIMA")
-        titulo_tela_zeresima.setObjectName("zeresima_titulo")
+        titulo_tela_boletim_urna = QLabel("BOLETIM DE URNA")
+        titulo_tela_boletim_urna.setObjectName("boletim_urna_titulo")
 
-        container.addWidget(icone_tela_zeresima)
-        container.addWidget(titulo_tela_zeresima)
+        container.addWidget(icone_tela_boletim_urna)
+        container.addWidget(titulo_tela_boletim_urna)
 
         layout.addLayout(container)
 
-        titulo_tela_zeresima = QLabel("ZERÉSIMA")
-        titulo_tela_zeresima.setObjectName("zeresima_titulo")
+        titulo_tela_boletim_urna = QLabel("ZERÉSIMA")
+        titulo_tela_boletim_urna.setObjectName("boletim_urna_titulo")
 
-        self.data_horario_zeresima = QLabel()
-        self.data_horario_zeresima.setObjectName("zeresima_data")
-        layout.addWidget(self.data_horario_zeresima)
+        self.data_horario_boletim_urna = QLabel()
+        self.data_horario_boletim_urna.setObjectName("zeresima_data")
+        layout.addWidget(self.data_horario_boletim_urna)
 
         self.registrar_horario()
 
-        info_zeresima = QWidget()
-        info_zeresima.setObjectName("info_zeresima")
-        layout_info = QVBoxLayout(info_zeresima)
+        info_boletim_urna = QWidget()
+        info_boletim_urna.setObjectName("info_boletim_urna")
+        layout_info = QVBoxLayout(info_boletim_urna)
         layout_info.setSpacing(1)
         layout_info.setAlignment(Qt.AlignTop)
         layout_info.setContentsMargins(25, 25, 25, 25)
         
-        candidatos_zeresima = QLabel("Candidatos:")
-        layout_info.addWidget(candidatos_zeresima)
+        vencedor_boletim_urna = QLabel("Candidato vencedor: ")
+        layout_info.addWidget(vencedor_boletim_urna)
+
+        layout.addStretch()
+
+        candidatos_boletim_urna = QLabel("Votos por candidato: ")
+        layout_info.addWidget(candidatos_boletim_urna)
 
         layout_info.addStretch()
 
-        votos_em_branco_zeresima = QLabel("Votos em branco:")
-        layout_info.addWidget(votos_em_branco_zeresima)
+        votos_em_branco_boletim_urna = QLabel("Votos em branco:")
+        layout_info.addWidget(votos_em_branco_boletim_urna)
 
-        votos_em_nulo_zeresima = QLabel("Votos Nulos:")
-        layout_info.addWidget(votos_em_nulo_zeresima)
+        votos_em_nulo_boletim_urna = QLabel("Votos Nulos:")
+        layout_info.addWidget(votos_em_nulo_boletim_urna)
+
+        votos_totais_boletim_urna = QLabel("Votos Totais:")
+        layout_info.addWidget(votos_totais_boletim_urna)
 
         layout_info.addStretch()
 
-        eleitores_aptos_zeresima = QLabel("Eleitores aptos:")
-        layout_info.addWidget(eleitores_aptos_zeresima)
+        eleitores_aptos_boletim_urna = QLabel("Eleitores aptos:")
+        layout_info.addWidget(eleitores_aptos_boletim_urna)
 
-        layout.addWidget(info_zeresima)
+        comparecimentos_boletim_urna = QLabel("Comparecimentos:")
+        layout_info.addWidget(comparecimentos_boletim_urna)
+
+        abstencoes_boletim_urna = QLabel("Abstenções:")
+        layout_info.addWidget(abstencoes_boletim_urna)
+
+        layout_info.addStretch()
+
+        empate_boletim_urna = QLabel("Empate entre candidatos: ")
+        layout_info.addWidget(empate_boletim_urna)
+
+        layout_info.addStretch()
+
+        eleitores_aptos_boletim_urna = QLabel("Situação dos eleitores:")
+        layout_info.addWidget(eleitores_aptos_boletim_urna)
+
+        layout.addWidget(info_boletim_urna, 1)
 
         botao_voltar_ao_menu = QPushButton("Voltar ao Menu")
         botao_voltar_ao_menu.setObjectName("menu_botao")
@@ -148,7 +172,7 @@ class TelaZeresima(QFrame):
     def registrar_horario(self):
         horario_zeresima_emitida = QDateTime.currentDateTime()
         horario_formatado = horario_zeresima_emitida.toString("dd/MM/yyyy, HH:mm:ss")
-        self.data_horario_zeresima.setText(f"Data e Horário da Emissão: {horario_formatado}")
+        self.data_horario_boletim_urna.setText(f"Data e Horário da Emissão: {horario_formatado}")
 
 
 if __name__ == "__main__":
