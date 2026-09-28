@@ -99,9 +99,14 @@ class TelaMenu(QWidget):
         layout.addWidget(subtitulo)
         layout.addSpacing(45)
 
-        layout.addWidget(self._criar_botao(
+        self.botao_zeresima = (self._criar_botao(
             "1", "Relatório Inicial (Zerésima)", self.relatorio_inicial_clicado
         ))
+
+
+        self.botao_zeresima.clicked.connect(self.habilitar_votar)
+        layout.addWidget(self.botao_zeresima)
+        
         layout.addSpacing(14)
 
         self.botao_votar = (self._criar_botao(
@@ -157,3 +162,6 @@ class TelaMenu(QWidget):
             atalho.activated.connect(sinal.emit)
 
             self._atalhos.append(atalho)
+
+    def habilitar_votar(self):
+        self.botao_votar.setEnabled(True)
