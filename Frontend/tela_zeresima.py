@@ -14,7 +14,8 @@ from PySide6.QtWidgets import (
     QTableWidgetItem,
     QHeaderView,
     QFrame,
-    QDialog
+    QDialog,
+    QStackedWidget
 )
 
 ESTILO_MENU = """
@@ -72,6 +73,9 @@ ESTILO_MENU = """
 """
 
 class TelaZeresima(QDialog):
+
+    zeresima_confirmada = Signal()
+
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -144,10 +148,16 @@ class TelaZeresima(QDialog):
 
         self.setStyleSheet(ESTILO_MENU)
 
+        botao_voltar_ao_menu.clicked.connect(self.voltar_ao_menu)
+
     def registrar_horario(self):
         horario_zeresima_emitida = QDateTime.currentDateTime()
         horario_formatado = horario_zeresima_emitida.toString("dd/MM/yyyy, HH:mm:ss")
         self.data_horario_zeresima.setText(f"Data e Horário da Emissão: {horario_formatado}")
+
+    def voltar_ao_menu(self):
+        self.zeresima_confirmada.emit()
+        self.close()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
