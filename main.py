@@ -37,9 +37,13 @@ class JanelaPrincipal(QWidget):
     def _conectar_sinais(self):
         self.menu.relatorio_inicial_clicado.connect(self.ir_para_zeresima) #Troca pra tela da zerésima
         self.menu.sair_clicado.connect(self.sair) #Sai do sistema
+        self.zeresima.zeresima_confirmada.connect(self.confirmar_zeresima) #Volta para a tela de menu
 
     def ir_para_zeresima(self):
         self.stack.setCurrentWidget(self.zeresima)
+
+    def confirmar_zeresima(self):
+        self.stack.setCurrentWidget(self.menu)
 
     def sair(self):
         self.close()
