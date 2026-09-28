@@ -31,3 +31,5 @@ def confirmar(urna):
         return
 
     corrigir(urna)
+
+    # Botões Prontos
