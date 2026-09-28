@@ -1,11 +1,11 @@
-import sys
-
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QKeySequence, QShortcut
-from PySide6.QtWidgets import ( QLabel, QPushButton, QVBoxLayout, QWidget,
+from PySide6.QtWidgets import ( 
+    QLabel, 
+    QPushButton, 
+    QVBoxLayout, 
+    QWidget
 )
-
-
 
 ESTILO_MENU = """
 
@@ -55,10 +55,8 @@ ESTILO_MENU = """
 
 """
 
-
 class TelaMenu(QWidget):
-
-
+    
     relatorio_inicial_clicado = Signal()
     votar_clicado = Signal()
     relatorio_final_clicado = Signal()
@@ -69,6 +67,7 @@ class TelaMenu(QWidget):
 
         self.setObjectName("tela_menu")
         self.setAttribute(Qt.WA_StyledBackground, True)
+        self.setStyleSheet(ESTILO_MENU)
 
         self._atalhos = []
 
