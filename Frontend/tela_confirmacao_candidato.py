@@ -1,4 +1,5 @@
-import sys, os
+import sys
+import os
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QKeySequence, QPixmap, QShortcut
 from PySide6.QtWidgets import (
@@ -9,6 +10,8 @@ from PySide6.QtWidgets import (
     QLabel,
     QPushButton,
 )
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 ESTILO_CONFIRMACAO = """
 
@@ -103,19 +106,19 @@ class TelaConfirmacaoCandidato(QWidget):
 
     def _criar_widgets(self):
 
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(50, 25, 50, 25)
-        layout.setSpacing(15)
+        layout_principal = QVBoxLayout(self)
+        layout_principal.setContentsMargins(50, 25, 50, 25)
+        layout_principal.setSpacing(15)
 
         self.foto_candidato = QLabel()
         self.foto_candidato.setObjectName("confirmacao_foto")
         self.foto_candidato.setFixedSize(230, 220)
         self.foto_candidato.setAlignment(Qt.AlignCenter)
-        layout.addWidget(self.foto_candidato, alignment=Qt.AlignHCenter)
+        layout_principal.addWidget(self.foto_candidato, alignment=Qt.AlignHCenter)
 
-        informacoes = QVBoxLayout()
-        informacoes.setSpacing(4)
-        informacoes.setAlignment(Qt.AlignTop)
+        layout_informacoes = QVBoxLayout()
+        layout_informacoes.setSpacing(4)
+        layout_informacoes.setAlignment(Qt.AlignTop)
 
         self.numero_candidato = QLabel()
         self.numero_candidato.setObjectName("confirmacao_numero")
@@ -131,19 +134,19 @@ class TelaConfirmacaoCandidato(QWidget):
         self.partido_candidato.setAlignment(Qt.AlignCenter)
         self.partido_candidato.setWordWrap(True)
 
-        informacoes.addWidget(self.numero_candidato)
-        informacoes.addWidget(self.nome_candidato)
-        informacoes.addWidget(self.partido_candidato)
+        layout_informacoes.addWidget(self.numero_candidato)
+        layout_informacoes.addWidget(self.nome_candidato)
+        layout_informacoes.addWidget(self.partido_candidato)
 
-        layout.addLayout(informacoes, 1)
+        layout_principal.addLayout(layout_informacoes, 1)
 
         pergunta_confirmacao = QLabel("Confirmar o voto?")
         pergunta_confirmacao.setObjectName("confirmacao_pergunta")
         pergunta_confirmacao.setAlignment(Qt.AlignCenter)
-        layout.addWidget(pergunta_confirmacao)
+        layout_principal.addWidget(pergunta_confirmacao)
 
-        botoes = QHBoxLayout()
-        botoes.setSpacing(20)
+        layout_botoes = QHBoxLayout()
+        layout_botoes.setSpacing(20)
 
         botao_cancelar = QPushButton("Cancelar")
         botao_cancelar.setObjectName("menu_botao")
@@ -157,25 +160,25 @@ class TelaConfirmacaoCandidato(QWidget):
         botao_confirmar.setMinimumHeight(36)
         botao_confirmar.clicked.connect(self.confirmar_clicado.emit)
 
-        botoes.addWidget(botao_cancelar)
-        botoes.addWidget(botao_confirmar)
-        layout.addLayout(botoes)
+        layout_botoes.addWidget(botao_cancelar)
+        layout_botoes.addWidget(botao_confirmar)
+        layout_principal.addLayout(layout_botoes)
 
         botao_voltar_menu = QPushButton("Voltar ao Menu")
         botao_voltar_menu.setObjectName("menu_botao")
         botao_voltar_menu.setCursor(Qt.PointingHandCursor)
         botao_voltar_menu.setMinimumHeight(36)
         botao_voltar_menu.clicked.connect(self.voltar_menu_clicado.emit)
-        layout.addWidget(botao_voltar_menu)
+        layout_principal.addWidget(botao_voltar_menu)
 
     def _criar_atalhos(self):
 
-        mapa = {
+        mapa_atalhos = {
             "S": self.confirmar_clicado,
             "Esc": self.cancelar_clicado,
         }
 
-        for tecla, sinal in mapa.items():
+        for tecla, sinal in mapa_atalhos.items():
             atalho = QShortcut(QKeySequence(tecla), self)
             atalho.activated.connect(sinal.emit)
             self._atalhos.append(atalho)
@@ -201,7 +204,6 @@ class TelaConfirmacaoCandidato(QWidget):
         self._carregar_foto(candidato["foto"])
 
     def _carregar_foto(self, caminho_foto):
-        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
         caminho_completo = os.path.join(BASE_DIR, "..", caminho_foto)
 
         pixmap = QPixmap(caminho_completo)
@@ -226,9 +228,9 @@ if __name__ == "__main__":
     # é o sinal candidato_selecionado da tela de votação (veja o docstring
     # do método), não uma chamada direta como abaixo.
     # Só para demonstrar como ficaria a tela de confirmação com um candidato específico.
-    app = QApplication(sys.argv)
-    window = TelaConfirmacaoCandidato()
-    window.exibir_candidato(
+    aplicacao = QApplication(sys.argv)
+    janela_confirmacao = TelaConfirmacaoCandidato()
+    janela_confirmacao.exibir_candidato(
         "01",
         {
             "nome": "Evelyn Palbueno",
@@ -236,5 +238,5 @@ if __name__ == "__main__":
             "foto": "Imagens/candidato1.jpg",
         },
     )
-    window.show()
-    sys.exit(app.exec())
+    janela_confirmacao.show()
+    sys.exit(aplicacao.exec())
