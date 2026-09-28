@@ -10,8 +10,6 @@ from PySide6.QtWidgets import (
     QPushButton,
 )
 
-LARGURA_TELA = 800
-ALTURA_TELA = 500
 LARGURA_FOTO = 200
 ALTURA_FOTO = 220
 
@@ -97,7 +95,7 @@ class TelaConfirmacaoCandidato(QWidget):
 
         self.setObjectName("tela_confirmacao")
         self.setAttribute(Qt.WA_StyledBackground, True)
-        self.setFixedSize(LARGURA_TELA, ALTURA_TELA)
+        self.setFixedSize(800, 500)
         self.setWindowTitle("Confirmação de Candidato")
         self.setStyleSheet(ESTILO_CONFIRMACAO)
 
