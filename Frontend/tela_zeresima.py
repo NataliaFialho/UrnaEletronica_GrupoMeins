@@ -1,6 +1,6 @@
 import sys, os
 from PySide6.QtCore import Qt, QDateTime
-from PySide6.QtGui import QFont, QColor, QIcon, QPixmap
+from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
     QWidget,
@@ -8,12 +8,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QPushButton,
-    QComboBox,
-    QLineEdit,
-    QTableWidget,
-    QTableWidgetItem,
-    QHeaderView,
-    QFrame,
+    QFrame
 )
 
 ESTILO_MENU = """
