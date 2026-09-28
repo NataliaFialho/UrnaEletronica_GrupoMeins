@@ -51,7 +51,6 @@ class UrnaEletronica(QWidget):
 
         self.setWindowTitle("Urna Eletrônica")
         self.setFixedSize(800, 500)
-
             
         self.votos = {
             "01": 0,
