@@ -53,6 +53,12 @@ ESTILO_MENU = """
         border-color: #3d4a63;
     }
 
+    #menu_botao:disabled {
+        background-color: #d9d9d9;
+        color: #808080;
+        border: 1px solid #b0b0b0;
+    }
+
 """
 
 class TelaMenu(QWidget):
@@ -98,9 +104,13 @@ class TelaMenu(QWidget):
         ))
         layout.addSpacing(14)
 
-        layout.addWidget(self._criar_botao(
+        self.botao_votar = (self._criar_botao(
             "2", "Votar", self.votar_clicado
         ))
+
+        self.botao_votar.setEnabled(False)
+        layout.addWidget(self.botao_votar)
+
         layout.addSpacing(14)
 
         layout.addWidget(self._criar_botao(
