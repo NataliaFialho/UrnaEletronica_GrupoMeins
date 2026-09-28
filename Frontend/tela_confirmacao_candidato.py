@@ -10,9 +10,6 @@ from PySide6.QtWidgets import (
     QPushButton,
 )
 
-LARGURA_FOTO = 200
-ALTURA_FOTO = 220
-
 ESTILO_CONFIRMACAO = """
 
     QWidget {
@@ -112,7 +109,7 @@ class TelaConfirmacaoCandidato(QWidget):
 
         self.foto_candidato = QLabel()
         self.foto_candidato.setObjectName("confirmacao_foto")
-        self.foto_candidato.setFixedSize(LARGURA_FOTO, ALTURA_FOTO)
+        self.foto_candidato.setFixedSize(230, 220)
         self.foto_candidato.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.foto_candidato, alignment=Qt.AlignHCenter)
 
@@ -216,8 +213,8 @@ class TelaConfirmacaoCandidato(QWidget):
 
         self.foto_candidato.setPixmap(
             pixmap.scaled(
-                LARGURA_FOTO,
-                ALTURA_FOTO,
+                230,
+                220,
                 Qt.KeepAspectRatio,
                 Qt.SmoothTransformation,
             )
@@ -228,6 +225,7 @@ if __name__ == "__main__":
     # Demonstração isolada: na integração real, quem chama exibir_candidato
     # é o sinal candidato_selecionado da tela de votação (veja o docstring
     # do método), não uma chamada direta como abaixo.
+    # Só para demonstrar como ficaria a tela de confirmação com um candidato específico.
     app = QApplication(sys.argv)
     window = TelaConfirmacaoCandidato()
     window.exibir_candidato(
