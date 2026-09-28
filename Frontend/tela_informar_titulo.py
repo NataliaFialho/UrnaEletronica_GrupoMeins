@@ -24,14 +24,14 @@ ESTILO_TELA_TITULO = """
             #frameInput {
                 border: 1px solid #e5e7eb;
                 border-radius: 6px;
-                background-color: gray;
+                background-color: #DBDBDB;
             }
             #labelInput {
                 font-size: 13px;
                 font-weight: bold;
                 color: #374151;
                 border: none;
-                background-color: gray;
+                background-color: #DBDBDB;
             }
             #inputTitulo {
                 border: 1px solid #d1d5db;
