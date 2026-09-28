@@ -1,5 +1,5 @@
 import sys, os
-from PySide6.QtCore import Qt, QDateTime
+from PySide6.QtCore import Qt, QDateTime, Signal
 from PySide6.QtGui import QFont, QColor, QIcon, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
@@ -14,10 +14,10 @@ from PySide6.QtWidgets import (
     QTableWidgetItem,
     QHeaderView,
     QFrame,
+    QDialog
 )
 
 ESTILO_MENU = """
-
     QWidget {
         font-family: Arial;
         font-size: 16px;
@@ -69,10 +69,9 @@ ESTILO_MENU = """
         background-color: #F8F8FF;
         border-color: #3d4a63;
     }
-
 """
 
-class TelaZeresima(QFrame):
+class TelaZeresima(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
 
