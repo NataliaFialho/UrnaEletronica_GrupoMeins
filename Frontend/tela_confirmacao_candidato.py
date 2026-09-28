@@ -1,5 +1,5 @@
 import sys, os
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QKeySequence, QPixmap, QShortcut
 from PySide6.QtWidgets import (
     QApplication,
@@ -36,19 +36,25 @@ ESTILO_CONFIRMACAO = """
 
     #confirmacao_numero {
         color: #000000;
-        font-size: 36px;
+        font-size: 18px;
         font-weight: bold;
     }
 
     #confirmacao_nome {
         color: #000000;
-        font-size: 24px;
+        font-size: 18px;
         font-weight: bold;
     }
 
     #confirmacao_partido {
-        color: #4d5a75;
+        color: #000000;
+        font-size: 18px;
+    }
+
+    #confirmacao_pergunta {
+        color: #000000;
         font-size: 16px;
+        font-weight: 600;
     }
 
     #menu_botao {
@@ -84,6 +90,7 @@ class TelaConfirmacaoCandidato(QWidget):
 
     confirmar_clicado = Signal()
     cancelar_clicado = Signal()
+    voltar_menu_clicado = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -135,24 +142,36 @@ class TelaConfirmacaoCandidato(QWidget):
 
         layout.addLayout(informacoes, 1)
 
+        pergunta_confirmacao = QLabel("Confirmar o voto?")
+        pergunta_confirmacao.setObjectName("confirmacao_pergunta")
+        pergunta_confirmacao.setAlignment(Qt.AlignCenter)
+        layout.addWidget(pergunta_confirmacao)
+
         botoes = QHBoxLayout()
         botoes.setSpacing(20)
 
         botao_cancelar = QPushButton("Cancelar")
         botao_cancelar.setObjectName("menu_botao")
         botao_cancelar.setCursor(Qt.PointingHandCursor)
-        botao_cancelar.setMinimumHeight(56)
+        botao_cancelar.setMinimumHeight(36)
         botao_cancelar.clicked.connect(self.cancelar_clicado.emit)
 
         botao_confirmar = QPushButton("Confirmar (S)")
         botao_confirmar.setObjectName("botao_confirmar")
         botao_confirmar.setCursor(Qt.PointingHandCursor)
-        botao_confirmar.setMinimumHeight(56)
+        botao_confirmar.setMinimumHeight(36)
         botao_confirmar.clicked.connect(self.confirmar_clicado.emit)
 
         botoes.addWidget(botao_cancelar)
         botoes.addWidget(botao_confirmar)
         layout.addLayout(botoes)
+
+        botao_voltar_menu = QPushButton("Voltar ao Menu")
+        botao_voltar_menu.setObjectName("menu_botao")
+        botao_voltar_menu.setCursor(Qt.PointingHandCursor)
+        botao_voltar_menu.setMinimumHeight(36)
+        botao_voltar_menu.clicked.connect(self.voltar_menu_clicado.emit)
+        layout.addWidget(botao_voltar_menu)
 
     def _criar_atalhos(self):
 
@@ -166,10 +185,24 @@ class TelaConfirmacaoCandidato(QWidget):
             atalho.activated.connect(sinal.emit)
             self._atalhos.append(atalho)
 
+    @Slot(str, dict)
     def exibir_candidato(self, numero, candidato):
+        """Slot que atualiza a tela com o candidato votado.
+
+        Conecte diretamente ao sinal da tela de votação que carrega o
+        candidato escolhido, por exemplo:
+
+            tela_de_voto.candidato_selecionado.connect(
+                tela_confirmacao.exibir_candidato
+            )
+
+        onde `candidato_selecionado = Signal(str, dict)` é emitido pela
+        tela de votação com o número digitado e o dicionário do
+        candidato (mesmo formato de `candidatos.py`).
+        """
         self.numero_candidato.setText(numero)
-        self.nome_candidato.setText(candidato["nome"])
-        self.partido_candidato.setText(candidato["partido"])
+        self.nome_candidato.setText(f"Nome: {candidato['nome']}")
+        self.partido_candidato.setText(f"Partido: {candidato['partido']}")
         self._carregar_foto(candidato["foto"])
 
     def _carregar_foto(self, caminho_foto):
@@ -194,6 +227,9 @@ class TelaConfirmacaoCandidato(QWidget):
 
 
 if __name__ == "__main__":
+    # Demonstração isolada: na integração real, quem chama exibir_candidato
+    # é o sinal candidato_selecionado da tela de votação (veja o docstring
+    # do método), não uma chamada direta como abaixo.
     app = QApplication(sys.argv)
     window = TelaConfirmacaoCandidato()
     window.exibir_candidato(
