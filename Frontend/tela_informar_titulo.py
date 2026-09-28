@@ -14,21 +14,24 @@ ESTILO_TELA_TITULO = """
                 font-size: 17px;
                 font-weight: bold;
                 color: #1a2a40;
+                background-color: white;
             }
             #subtitulo {
                 font-size: 13px;
                 color: #6b7280;
+                background-color: white;
             }
             #frameInput {
                 border: 1px solid #e5e7eb;
                 border-radius: 6px;
-                background-color: #ffffff;
+                background-color: gray;
             }
             #labelInput {
                 font-size: 13px;
                 font-weight: bold;
                 color: #374151;
                 border: none;
+                background-color: gray;
             }
             #inputTitulo {
                 border: 1px solid #d1d5db;
@@ -72,7 +75,7 @@ class TelaTituloEleitor(QWidget):
         super().__init__()
     
         self.setWindowTitle("Urna Eletrônica - Informar Título")
-        self.setMinimumSize(500, 400)
+        self.setMinimumSize(800, 500)
         self.setStyleSheet("background-color: #f0f4f8;") 
 
         layout_principal = QVBoxLayout(self)
@@ -80,7 +83,7 @@ class TelaTituloEleitor(QWidget):
 
         card = QFrame()
         card.setObjectName("cardPrincipal")
-        card.setFixedSize(420, 290)
+        card.setFixedSize(700, 400)
         
         card_layout = QVBoxLayout(card)
         card_layout.setContentsMargins(20, 20, 20, 20)
@@ -89,7 +92,7 @@ class TelaTituloEleitor(QWidget):
         header_layout = QHBoxLayout()
         
         icone_label = QLabel()
-        icone_label.setPixmap(QPixmap("Imagens/icone_urna.png"))
+        icone_label.setPixmap(QPixmap("Imagens/icone_titulo_eleitoral.png"))
 
         textos_layout = QVBoxLayout()
         textos_layout.setSpacing(2)
@@ -109,6 +112,7 @@ class TelaTituloEleitor(QWidget):
 
         input_frame = QFrame()
         input_frame.setObjectName("frameInput")
+        input_frame.setFixedHeight(200)
         
         input_layout = QVBoxLayout(input_frame)
         input_layout.setContentsMargins(15, 15, 15, 15)
@@ -123,6 +127,7 @@ class TelaTituloEleitor(QWidget):
 
         input_layout.addWidget(label_input)
         input_layout.addWidget(self.input_titulo)
+        input_layout.addStretch()
 
         botoes_layout = QHBoxLayout()
         botoes_layout.addStretch() # Empurra os botões para a direita
