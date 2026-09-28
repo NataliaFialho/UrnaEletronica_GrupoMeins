@@ -10,7 +10,7 @@ candidatos = {
         "foto": "Imagens/candidato2.jpg"
     },
     "03": {
-        "nome": "Ederson",
+        "nome": "Ederson da Costa",
         "partido": "Desenvolvedor de Software",
         "foto": "Imagens/candidato3.jpg"
     }

@@ -1,48 +1,87 @@
-import sys, os
 from PySide6.QtWidgets import (
-    QApplication, QWidget, QLabel, QPushButton,
-    QGridLayout, QVBoxLayout, QHBoxLayout, QMessageBox
+    QWidget, QLabel, QPushButton,
+    QGridLayout, QVBoxLayout, QHBoxLayout, QFrame
 )
 from PySide6.QtGui import QPixmap, QFont
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 
 from Backend.confirmar import confirmar
 from Backend.corrigir import corrigir
 from Backend.voto_branco import voto_branco
-from Frontend.candidados import candidatos
+from candidados import candidatos
 
 ESTILOS = """
-    QLabel#titulo {
-        color: black;
-    }
+QWidget {
+    background-color: #EEF2F5;
+    font-family: Arial;
+}
 
-    QPushButton#numericos {
-        background-color: #E8EDF3;
-        color: black;
-    }
+QLabel#titulo {
+    color: #334E68;
+    font-size: 28px;
+    font-weight: bold;
+    padding: 15px;
+}
 
-    QPushButton#btn-branco {
-        background-color: white;
-        color: black;
-        border: 2px solid #618CAA;
-    }
+QLabel {
+    color: #334E68;
+}
 
-    QPushButton#btn-corrige {
-        background-color: orange;
-    }
+QPushButton#numericos {
+    background-color: #E8EDF3;
+    color: #334E68;
+    border: 1px solid #C7D0D9;
+    border-radius: 8px;
+    font-size: 22px;
+    font-weight: bold;
+}
 
-    QPushButton#btn-confirma {
-        background-color: green; color: white;
-    }
+QPushButton#numericos:hover {
+    background-color: #DDE6EE;
+}
 
-    QWidget#teclado-widget {
-        background-color: white;
-        border: 2px solid #618CAA;
-    }
+QPushButton#btn-branco {
+    background-color: white;
+    border: 1px solid #C7D0D9;
+    border-radius: 8px;
+    color: #334E68;
+    font-weight: bold;
+}
 
-    QLabel#foto-label {
-        border: 1px solid black;
-    }
+QPushButton#btn-corrige {
+    background-color: #F4B64E;
+    border: none;
+    border-radius: 8px;
+    color: #334E68;
+    font-weight: bold;
+}
+
+QPushButton#btn-confirma {
+    background-color: #3F9D8B;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+}
+
+QWidget#teclado-widget {
+    background-color: white;
+    border: 1px solid #D6DDE4;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+QLabel#foto-label {
+    background-color: #F7F9FB;
+    border: 1px solid #D6DDE4;
+    border-radius: 8px;
+}
+
+QFrame#painel-esquerdo {
+    background-color: white;
+    border: 1px solid #D6DDE4;
+    border-radius: 10px;
+}
 """
 
 class UrnaEletronica(QWidget):
@@ -51,7 +90,6 @@ class UrnaEletronica(QWidget):
 
         self.setWindowTitle("Urna Eletrônica")
         self.setFixedSize(800, 500)
-            
         self.votos = {
             "01": 0,
             "02": 0,
@@ -64,12 +102,20 @@ class UrnaEletronica(QWidget):
 
         self.criar_interface()
 
+    fechada = Signal()
+
+    def closeEvent(self, event):
+        self.fechada.emit()
+        super().closeEvent(event)
+
     def criar_interface(self):
         self.setStyleSheet(ESTILOS)
         layout_principal = QHBoxLayout()
 
-        # Tela da urna
-        tela = QVBoxLayout()
+        painel_esquerdo = QFrame()
+        painel_esquerdo.setObjectName("painel-esquerdo")
+
+        tela = QVBoxLayout(painel_esquerdo)
 
         titulo = QLabel("SEU VOTO PARA")
         titulo.setAlignment(Qt.AlignCenter)
@@ -94,11 +140,10 @@ class UrnaEletronica(QWidget):
         tela.addWidget(self.numero_label)
         tela.addWidget(self.nome_label)
         tela.addWidget(self.partido_label)
-        tela.addWidget(self.foto_label)
+        tela.addWidget(self.foto_label, alignment=Qt.AlignCenter)
 
-        # Teclado
         teclado = QGridLayout()
-        teclado.setContentsMargins(30, 0, 0, 0)
+        teclado.setContentsMargins(20, 0, 20, 0)
 
         numeros = [
             ('1', 0, 0), ('2', 0, 1), ('3', 0, 2),
@@ -110,24 +155,24 @@ class UrnaEletronica(QWidget):
         for texto, linha, coluna in numeros:
             botao = QPushButton(texto)
             botao.setObjectName("numericos")
-            botao.setFixedSize(70, 50)
+            botao.setFixedSize(90, 55)
             botao.clicked.connect(
                 lambda checked, t=texto: self.digitar_numero(t)
             )
             teclado.addWidget(botao, linha, coluna)
 
         branco = QPushButton("BRANCO")
-        branco.setFixedSize(70, 50)
+        branco.setFixedSize(90, 55)
         branco.setObjectName("btn-branco")
         branco.clicked.connect(lambda: voto_branco(self))
 
         corrige = QPushButton("CORRIGE")
-        corrige.setFixedSize(70, 50)
+        corrige.setFixedSize(90, 55)
         corrige.setObjectName("btn-corrige")
         corrige.clicked.connect(lambda: corrigir(self))
 
         confirma = QPushButton("CONFIRMA")
-        confirma.setFixedSize(70, 50)
+        confirma.setFixedSize(90, 55)
         confirma.setObjectName("btn-confirma")
         confirma.clicked.connect(lambda: confirmar(self))
 
@@ -140,7 +185,7 @@ class UrnaEletronica(QWidget):
         teclado_widget.setLayout(teclado)
         teclado_widget.setMaximumWidth(400)
 
-        layout_principal.addLayout(tela, 2)
+        layout_principal.addWidget(painel_esquerdo, 2)
         layout_principal.addWidget(teclado_widget, 1)
 
         self.setLayout(layout_principal)
@@ -167,6 +212,7 @@ class UrnaEletronica(QWidget):
                     Qt.KeepAspectRatio
                 )
             )
+            
         else:
             self.nome_label.setText("VOTO NULO")
             self.partido_label.setText("")
