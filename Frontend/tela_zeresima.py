@@ -1,6 +1,6 @@
 import sys, os
 from PySide6.QtCore import Qt, QDateTime, Signal
-from PySide6.QtGui import QFont, QColor, QIcon, QPixmap
+from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
     QWidget,
@@ -8,19 +8,14 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QPushButton,
-    QComboBox,
-    QLineEdit,
-    QTableWidget,
-    QTableWidgetItem,
-    QHeaderView,
-    QFrame,
     QDialog,
-    QScrollArea,
-    QStackedWidget
+    QScrollArea
 )
 
 from Backend.candidatos import candidatos
 from Backend.eleitor import eleitores
+from Backend.atualizar_candidatos import atualizar_candidatos
+from Backend.atualizar_eleitores import atualizar_eleitores
 
 ESTILO_MENU = """
     QWidget {
@@ -137,9 +132,6 @@ class TelaZeresima(QDialog):
 
         self.registrar_horario()
 
-        info_zeresima = QWidget()
-        info_zeresima.setObjectName("info_zeresima")
-
         conteudo_zeresima = QWidget()
         conteudo_zeresima.setObjectName ("zeresima_conteudo")
         conteudo_zeresima.setMinimumHeight (450)
@@ -153,7 +145,7 @@ class TelaZeresima(QDialog):
         self.candidatos_zeresima.setWordWrap(True)
         layout_info.addWidget(self.candidatos_zeresima)
 
-        self.atualizar_candidatos(candidatos)
+        atualizar_candidatos(self.candidatos_zeresima, candidatos)
 
         layout_info.addStretch()
 
@@ -168,14 +160,7 @@ class TelaZeresima(QDialog):
         self.eleitores_aptos_zeresima = QLabel()
         layout_info.addWidget(self.eleitores_aptos_zeresima)
 
-        self.eleitores_nao_votaram = QLabel()
-        layout_info.addWidget(self.eleitores_nao_votaram)
-
-        self.eleitores_que_votaram = QLabel()
-        layout_info.addWidget(self.eleitores_que_votaram)
-
-
-        self.atualizar_eleitores(eleitores)
+        atualizar_eleitores(self.eleitores_aptos_zeresima, eleitores)
 
         scroll_zeresima = QScrollArea()
         scroll_zeresima.setObjectName ("info_zeresima_scroll")
@@ -184,8 +169,6 @@ class TelaZeresima(QDialog):
         scroll_zeresima.setWidget(conteudo_zeresima)
 
         layout.addWidget(scroll_zeresima, 1)
-
-        layout.addWidget(info_zeresima)
 
         botao_voltar_ao_menu = QPushButton("Voltar ao Menu")
         botao_voltar_ao_menu.setObjectName("menu_botao")
@@ -199,30 +182,6 @@ class TelaZeresima(QDialog):
         horario_zeresima_emitida = QDateTime.currentDateTime()
         horario_formatado = horario_zeresima_emitida.toString("dd/MM/yyyy, HH:mm:ss")
         self.data_horario_zeresima.setText(f"Data e Horário da Emissão: {horario_formatado}")
-
-    def atualizar_candidatos(self, candidatos):
-        texto = "Candidatos:\n\n"
-
-        for numero, dados in candidatos.items():
-            texto += (
-                f"{numero} - {dados['nome']} "
-                f"({dados['partido']})\n"
-            )
-
-        self.candidatos_zeresima.setText(texto)
-
-    def atualizar_eleitores(self, eleitores):
-        texto = f"Eleitores aptos: {len(eleitores)}\n\n"
-
-        for titulo, dados in eleitores.items():
-            status = "Votou" if dados["votou"] else "Não votou"
-
-            texto += (
-                f"{titulo} - {dados['nome']} "
-                f"({status})\n"
-            )
-
-        self.eleitores_aptos_zeresima.setText(texto)
         
     def voltar_ao_menu(self):
         self.zeresima_confirmada.emit()
