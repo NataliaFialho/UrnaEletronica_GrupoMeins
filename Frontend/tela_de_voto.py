@@ -8,7 +8,7 @@ from PySide6.QtCore import Qt, Signal
 from Backend.confirmar import confirmar
 from Backend.corrigir import corrigir
 from Backend.voto_branco import voto_branco
-from candidados import candidatos
+from Frontend.candidatos import candidatos
 
 ESTILOS = """
 QWidget {
