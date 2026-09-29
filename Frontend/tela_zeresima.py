@@ -1,6 +1,6 @@
 import sys, os
 from PySide6.QtCore import Qt, QDateTime, Signal
-from PySide6.QtGui import QFont, QColor, QIcon, QPixmap
+from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
     QWidget,
@@ -8,14 +8,14 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QPushButton,
-    QComboBox,
-    QLineEdit,
-    QTableWidget,
-    QTableWidgetItem,
-    QHeaderView,
-    QFrame,
-    QDialog
+    QDialog,
+    QScrollArea
 )
+
+from Backend.candidatos import candidatos
+from Backend.eleitor import eleitores
+from Backend.atualizar_candidatos import atualizar_candidatos
+from Backend.atualizar_eleitores import atualizar_eleitores
 
 ESTILO_MENU = """
     QWidget {
@@ -69,9 +69,31 @@ ESTILO_MENU = """
         background-color: #F8F8FF;
         border-color: #3d4a63;
     }
+
+    #info_zeresima_scroll {
+        border-width: 1px;
+        border-style: solid;
+        border-color: black;
+        border-radius: 5px;
+    }
+ 
+    QScrollArea {
+        background: transparent;
+    }
+ 
+    QScrollArea > QWidget > QWidget {
+        background: transparent;
+    }
+ 
+    #zeresima_conteudo {
+        background: transparent;
+    }
 """
 
 class TelaZeresima(QDialog):
+
+    zeresima_confirmada = Signal()
+
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -104,24 +126,26 @@ class TelaZeresima(QDialog):
 
         layout.addLayout(container)
 
-        titulo_tela_zeresima = QLabel("ZERÉSIMA")
-        titulo_tela_zeresima.setObjectName("zeresima_titulo")
-
         self.data_horario_zeresima = QLabel()
         self.data_horario_zeresima.setObjectName("zeresima_data")
         layout.addWidget(self.data_horario_zeresima)
 
         self.registrar_horario()
 
-        info_zeresima = QWidget()
-        info_zeresima.setObjectName("info_zeresima")
-        layout_info = QVBoxLayout(info_zeresima)
+        conteudo_zeresima = QWidget()
+        conteudo_zeresima.setObjectName ("zeresima_conteudo")
+        conteudo_zeresima.setMinimumHeight (450)
+
+        layout_info = QVBoxLayout(conteudo_zeresima)
         layout_info.setSpacing(1)
         layout_info.setAlignment(Qt.AlignTop)
         layout_info.setContentsMargins(25, 25, 25, 25)
-        
-        candidatos_zeresima = QLabel("Candidatos:")
-        layout_info.addWidget(candidatos_zeresima)
+
+        self.candidatos_zeresima = QLabel()
+        self.candidatos_zeresima.setWordWrap(True)
+        layout_info.addWidget(self.candidatos_zeresima)
+
+        atualizar_candidatos(self.candidatos_zeresima, candidatos)
 
         layout_info.addStretch()
 
@@ -133,10 +157,18 @@ class TelaZeresima(QDialog):
 
         layout_info.addStretch()
 
-        eleitores_aptos_zeresima = QLabel("Eleitores aptos:")
-        layout_info.addWidget(eleitores_aptos_zeresima)
+        self.eleitores_aptos_zeresima = QLabel()
+        layout_info.addWidget(self.eleitores_aptos_zeresima)
 
-        layout.addWidget(info_zeresima)
+        atualizar_eleitores(self.eleitores_aptos_zeresima, eleitores)
+
+        scroll_zeresima = QScrollArea()
+        scroll_zeresima.setObjectName ("info_zeresima_scroll")
+        scroll_zeresima.setWidgetResizable(True)
+        scroll_zeresima.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        scroll_zeresima.setWidget(conteudo_zeresima)
+
+        layout.addWidget(scroll_zeresima, 1)
 
         botao_voltar_ao_menu = QPushButton("Voltar ao Menu")
         botao_voltar_ao_menu.setObjectName("menu_botao")
@@ -144,13 +176,18 @@ class TelaZeresima(QDialog):
 
         self.setStyleSheet(ESTILO_MENU)
 
+        botao_voltar_ao_menu.clicked.connect(self.voltar_ao_menu)
+
     def registrar_horario(self):
         horario_zeresima_emitida = QDateTime.currentDateTime()
         horario_formatado = horario_zeresima_emitida.toString("dd/MM/yyyy, HH:mm:ss")
         self.data_horario_zeresima.setText(f"Data e Horário da Emissão: {horario_formatado}")
+        
+    def voltar_ao_menu(self):
+        self.zeresima_confirmada.emit()
+        self.close()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = TelaZeresima()
-    window.show()
-    sys.exit(app.exec())
+    janela = TelaZeresima()
+    janela.exec()
