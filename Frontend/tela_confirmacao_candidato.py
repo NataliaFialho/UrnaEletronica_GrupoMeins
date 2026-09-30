@@ -1,4 +1,3 @@
-import sys
 import os
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QKeySequence, QPixmap, QShortcut
@@ -220,21 +219,3 @@ class TelaConfirmacaoCandidato(QWidget):
                 Qt.SmoothTransformation,
             )
         )
-
-if __name__ == "__main__":
-    # Demonstração isolada: na integração real, quem chama exibir_candidato
-    # é o sinal candidato_selecionado da tela de votação (veja o docstring
-    # do método), não uma chamada direta como abaixo.
-    # Só para demonstrar como ficaria a tela de confirmação com um candidato específico.
-    aplicacao = QApplication(sys.argv)
-    janela_confirmacao = TelaConfirmacaoCandidato()
-    janela_confirmacao.exibir_candidato(
-        "01",
-        {
-            "nome": "Evelyn Palbueno",
-            "partido": "Professor",
-            "foto": "Imagens/candidato1.jpg",
-        },
-    )
-    janela_confirmacao.show()
-    sys.exit(aplicacao.exec())

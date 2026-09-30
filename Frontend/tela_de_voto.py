@@ -85,11 +85,17 @@ QFrame#painel-esquerdo {
 """
 
 class UrnaEletronica(QWidget):
-    def __init__(self):
+
+    votacao_finalizada = Signal()
+    
+    def __init__(self, titulo_eleitor):
         super().__init__()
 
         self.setWindowTitle("Urna Eletrônica")
         self.setFixedSize(800, 500)
+
+        self.titulo_eleitor = titulo_eleitor
+
         self.votos = {
             "01": 0,
             "02": 0,
@@ -99,11 +105,11 @@ class UrnaEletronica(QWidget):
         }
 
         self.numero_digitado = ""
+        self.tela_confirmacao = None
 
         self.criar_interface()
 
     fechada = Signal()
-    confirmar_voto = Signal(str)
 
     def closeEvent(self, event):
         self.fechada.emit()

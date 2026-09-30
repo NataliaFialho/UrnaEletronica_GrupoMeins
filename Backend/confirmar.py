@@ -1,10 +1,16 @@
 from PySide6.QtWidgets import QMessageBox
 from Backend.corrigir import corrigir
 from Backend.candidatos import candidatos
+from Frontend.tela_confirmacao_candidato import TelaConfirmacaoCandidato
+from Backend.eleitor import eleitores
+
 
 def confirmar(urna):
 
-    if not urna.numero_digitado:
+    numero = urna.numero_digitado
+
+    # VOTO EM BRANCO
+    if not numero:
         QMessageBox.warning(
             urna,
             "Atenção",
@@ -12,24 +18,33 @@ def confirmar(urna):
         )
         return
 
-    if urna.numero_digitado in candidatos:
+    # VOTO NULO
+    if numero not in candidatos:
 
-        candidato = candidatos[urna.numero_digitado]
+        urna.votos["nulo"] += 1
 
-        resposta = QMessageBox.question(
+        QMessageBox.information(
             urna,
-            "Confirmar voto",
-            f"Nome: {candidato['nome']}\n"
-            f"Partido: {candidato['partido']}\n"
-            f"Número: {urna.numero_digitado}\n\n"
-            "Confirmar o voto?",
-            QMessageBox.Yes | QMessageBox.No
+            "Voto",
+            "Voto nulo!"
         )
 
-        if resposta == QMessageBox.No:
-            return
+        finalizar_votacao(urna)
+        return
 
-        urna.votos[urna.numero_digitado] += 1
+    # VOTO EM CANDIDATO
+    candidato = candidatos[numero]
+
+    urna.tela_confirmacao = TelaConfirmacaoCandidato()
+
+    urna.tela_confirmacao.exibir_candidato(
+        numero,
+        candidato
+    )
+
+    def confirmar_voto():
+
+        urna.votos[numero] += 1
 
         QMessageBox.information(
             urna,
@@ -37,25 +52,23 @@ def confirmar(urna):
             f"Voto confirmado para {candidato['nome']}!"
         )
 
-    else:
+        urna.tela_confirmacao.close()
 
-        resposta = QMessageBox.question(
-            urna,
-            "Voto nulo",
-            f"Número digitado: {urna.numero_digitado}\n\n"
-            "Confirmar voto nulo?",
-            QMessageBox.Yes | QMessageBox.No
-        )
+        finalizar_votacao(urna)
 
-        if resposta == QMessageBox.No:
-            return
+    def cancelar():
+        urna.tela_confirmacao.close()
 
-        urna.votos["nulo"] += 1
+    urna.tela_confirmacao.confirmar_clicado.connect(confirmar_voto)
+    urna.tela_confirmacao.cancelar_clicado.connect(cancelar)
 
-        QMessageBox.information(
-            urna,
-            "Voto",
-            "Voto nulo confirmado!"
-        )
+    urna.tela_confirmacao.show()
 
-    corrigir(urna)
+
+def finalizar_votacao(urna):
+
+    eleitores[urna.titulo_eleitor]["votou"] = True
+
+    print("Voto registrado com sucesso.")
+
+    urna.votacao_finalizada.emit()
