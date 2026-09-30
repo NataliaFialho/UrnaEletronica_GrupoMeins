@@ -205,3 +205,8 @@ class TelaBoletimUrna(QWidget):
         self.boletim_confirmado.emit()
 
 
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = TelaBoletimUrna()
+    window.show()
+    sys.exit(app.exec())
