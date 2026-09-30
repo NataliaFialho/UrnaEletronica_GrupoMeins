@@ -1,6 +1,5 @@
 from typing import Optional
 
-
 class UrnaBackend:
     def __init__(
         self,

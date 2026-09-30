@@ -71,7 +71,7 @@ ESTILO_TELA_TITULO = """
             """ 
  
 class TelaTituloEleitor(QWidget): 
-
+    titulo_validado = Signal()
     cancelar_clicado = Signal()
 
     def __init__(self): 
@@ -161,7 +161,6 @@ class TelaTituloEleitor(QWidget):
 
     def voltar_ao_menu(self):
         self.cancelar_clicado.emit()
- 
  
 if __name__ == "__main__": 
     app = QApplication(sys.argv) 
