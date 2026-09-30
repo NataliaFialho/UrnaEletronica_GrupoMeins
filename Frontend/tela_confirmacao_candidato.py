@@ -83,7 +83,6 @@ ESTILO_CONFIRMACAO = """
     }
 """
 
-
 class TelaConfirmacaoCandidato(QWidget):
 
     confirmar_clicado = Signal()
@@ -221,7 +220,6 @@ class TelaConfirmacaoCandidato(QWidget):
                 Qt.SmoothTransformation,
             )
         )
-
 
 if __name__ == "__main__":
     # Demonstração isolada: na integração real, quem chama exibir_candidato

@@ -8,7 +8,7 @@ from PySide6.QtCore import Qt, Signal
 from Backend.confirmar import confirmar
 from Backend.corrigir import corrigir
 from Backend.voto_branco import voto_branco
-from Frontend.candidatos import candidatos
+from Backend.candidatos import candidatos
 
 ESTILOS = """
 QWidget {
@@ -103,6 +103,7 @@ class UrnaEletronica(QWidget):
         self.criar_interface()
 
     fechada = Signal()
+    confirmar_voto = Signal(str)
 
     def closeEvent(self, event):
         self.fechada.emit()

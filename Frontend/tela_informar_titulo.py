@@ -160,7 +160,6 @@ class TelaTituloEleitor(QWidget):
     def voltar_ao_menu(self):
         self.cancelar_clicado.emit()
  
- 
 if __name__ == "__main__": 
     app = QApplication(sys.argv) 
     tela = TelaTituloEleitor() 
