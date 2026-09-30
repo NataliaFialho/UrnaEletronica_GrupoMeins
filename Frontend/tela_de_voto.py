@@ -5,10 +5,10 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QPixmap, QFont
 from PySide6.QtCore import Qt, Signal
 
-from Backend.confirmar import confirmar
-from Backend.corrigir import corrigir
-from Backend.voto_branco import voto_branco
-from Backend.candidatos import candidatos
+# from Backend.confirmar import confirmar
+# from Backend.corrigir import corrigir
+# from Backend.voto_branco import voto_branco
+# from Backend.candidatos import candidatos
 
 ESTILOS = """
 QWidget {
@@ -162,6 +162,7 @@ class UrnaEletronica(QWidget):
         for texto, linha, coluna in numeros:
             botao = QPushButton(texto)
             botao.setObjectName("numericos")
+            botao.setCursor(Qt.PointingHandCursor)
             botao.setFixedSize(90, 55)
             botao.clicked.connect(
                 lambda checked, t=texto: self.digitar_numero(t)
@@ -171,16 +172,19 @@ class UrnaEletronica(QWidget):
         branco = QPushButton("BRANCO")
         branco.setFixedSize(90, 55)
         branco.setObjectName("btn-branco")
+        branco.setCursor(Qt.PointingHandCursor)
         branco.clicked.connect(lambda: voto_branco(self))
 
         corrige = QPushButton("CORRIGE")
         corrige.setFixedSize(90, 55)
         corrige.setObjectName("btn-corrige")
+        corrige.setCursor(Qt.PointingHandCursor)
         corrige.clicked.connect(lambda: corrigir(self))
 
         confirma = QPushButton("CONFIRMA")
         confirma.setFixedSize(90, 55)
         confirma.setObjectName("btn-confirma")
+        confirma.setCursor(Qt.PointingHandCursor)
         confirma.clicked.connect(lambda: confirmar(self))
 
         teclado.addWidget(branco, 4, 0)

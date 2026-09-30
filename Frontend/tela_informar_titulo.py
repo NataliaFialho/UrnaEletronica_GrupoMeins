@@ -144,10 +144,12 @@ class TelaTituloEleitor(QWidget):
  
         btn_cancelar = QPushButton("Cancelar") 
         btn_cancelar.setObjectName("btnCancelar") 
+        btn_cancelar.setCursor(Qt.PointingHandCursor)
  
         btn_continuar = QPushButton("Continuar") 
         btn_continuar.setObjectName("btnContinuar")
         btn_continuar.clicked.connect(self.validar_titulo)
+        btn_continuar.setCursor(Qt.PointingHandCursor)
  
         # Faz o Cancelar voltar para o menu
         btn_cancelar.clicked.connect(self.voltar_ao_menu)

@@ -186,6 +186,8 @@ class TelaBoletimUrna(QWidget):
 
         botao_voltar_ao_menu = QPushButton("Voltar ao Menu")
         botao_voltar_ao_menu.setObjectName("menu_botao")
+        botao_voltar_ao_menu.setCursor(Qt.PointingHandCursor)
+       
         layout.addWidget(botao_voltar_ao_menu)
 
         self.setStyleSheet(ESTILO_MENU)
