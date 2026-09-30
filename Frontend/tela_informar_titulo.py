@@ -1,8 +1,11 @@
-import sys 
 from PySide6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, 
                                QLabel, QLineEdit, QPushButton, QFrame, QSpacerItem, QSizePolicy) 
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QPixmap 
+from PySide6.QtGui import QPixmap
+
+from Backend.eleitor import eleitores
+
+from Frontend.popup import PopUps
  
 ESTILO_TELA_TITULO = """ 
             #cardPrincipal { 
@@ -70,12 +73,15 @@ ESTILO_TELA_TITULO = """
             } 
             """ 
  
-class TelaTituloEleitor(QWidget): 
-    titulo_validado = Signal()
-    cancelar_clicado = Signal()
+class TelaTituloEleitor(QWidget):
 
-    def __init__(self): 
-        super().__init__() 
+    cancelar_clicado = Signal()
+    titulo_validado = Signal(str)
+
+    def __init__(self, eleitores):
+        super().__init__()
+
+        self.eleitores = eleitores
      
         self.setWindowTitle("Urna Eletrônica - Informar Título") 
         self.setMinimumSize(800, 500) 
@@ -141,7 +147,8 @@ class TelaTituloEleitor(QWidget):
         btn_cancelar.setCursor(Qt.PointingHandCursor)
  
         btn_continuar = QPushButton("Continuar") 
-        btn_continuar.setObjectName("btnContinuar") 
+        btn_continuar.setObjectName("btnContinuar")
+        btn_continuar.clicked.connect(self.validar_titulo)
         btn_continuar.setCursor(Qt.PointingHandCursor)
  
         # Faz o Cancelar voltar para o menu
@@ -159,11 +166,18 @@ class TelaTituloEleitor(QWidget):
  
         card.setStyleSheet(ESTILO_TELA_TITULO) 
 
+    def validar_titulo(self):
+        titulo = self.input_titulo.text().strip()
+
+        if titulo not in eleitores:
+            print("Título não encontrado.")
+            return
+
+        if eleitores[titulo]["votou"]:
+            PopUps.eleitor_ja_votou(self)
+            return
+
+        self.titulo_validado.emit(titulo)
+
     def voltar_ao_menu(self):
         self.cancelar_clicado.emit()
- 
-if __name__ == "__main__": 
-    app = QApplication(sys.argv) 
-    tela = TelaTituloEleitor() 
-    tela.show() 
-    sys.exit(app.exec())
