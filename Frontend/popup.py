@@ -1,6 +1,7 @@
 import sys
 
 from PySide6.QtWidgets import  QApplication, QMessageBox
+from PySide6.QtCore import Qt
 
 
 ESTILO_POPUP = """
@@ -69,6 +70,9 @@ class PopUps(QMessageBox):
         self.setIcon(icone)
         self.setStandardButtons(botoes)
 
+        for botao in self.buttons():
+            botao.setCursor(Qt.PointingHandCursor)
+
         # Aplica o estilo
         self.setStyleSheet(ESTILO_POPUP)
 
@@ -124,13 +128,22 @@ class PopUps(QMessageBox):
 
 
     @classmethod
-    def eleitor_ja_votou(cls, parent):
+    def eleitor_ja_votou(cls, parent=None):
 
         cls.acao_negada(
             parent,
             "Voto não permitido",
             "Este eleitor já realizou seu voto.\n"
             "Não é permitido votar duas vezes."
+        )
+
+    @classmethod
+    def titulo_invalido(cls, parent=None):
+
+        cls.acao_negada(
+            parent,
+            "Voto não permitido",
+            "Este título é inválido.\nVeja se foi digitado corretamente."
         )
 
 

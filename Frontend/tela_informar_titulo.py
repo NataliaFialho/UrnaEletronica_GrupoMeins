@@ -4,7 +4,11 @@ from PySide6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout,
                                QLabel, QLineEdit, QPushButton, QFrame, QSpacerItem, QSizePolicy,
                                QMessageBox)
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QPixmap 
+from PySide6.QtGui import QPixmap
+
+from Backend.eleitor import eleitores
+
+from Frontend.popup import PopUps
  
 ESTILO_TELA_TITULO = """ 
             #cardPrincipal { 
@@ -75,9 +79,12 @@ ESTILO_TELA_TITULO = """
 class TelaTituloEleitor(QWidget): 
     titulo_validado = Signal(str)
     cancelar_clicado = Signal()
+    titulo_validado = Signal(str)
 
-    def __init__(self): 
-        super().__init__() 
+    def __init__(self, eleitores):
+        super().__init__()
+
+        self.eleitores = eleitores
      
         self.setWindowTitle("Urna Eletrônica - Informar Título") 
         self.setMinimumSize(800, 500) 
@@ -144,9 +151,12 @@ class TelaTituloEleitor(QWidget):
  
         btn_cancelar = QPushButton("Cancelar") 
         btn_cancelar.setObjectName("btnCancelar") 
+        btn_cancelar.setCursor(Qt.PointingHandCursor)
  
         btn_continuar = QPushButton("Continuar") 
-        btn_continuar.setObjectName("btnContinuar") 
+        btn_continuar.setObjectName("btnContinuar")
+        btn_continuar.clicked.connect(self.validar_titulo)
+        btn_continuar.setCursor(Qt.PointingHandCursor)
  
         # Faz o Cancelar voltar para o menu
         btn_cancelar.clicked.connect(self.voltar_ao_menu)
