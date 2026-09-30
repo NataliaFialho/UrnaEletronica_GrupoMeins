@@ -187,7 +187,3 @@ class TelaZeresima(QDialog):
         self.zeresima_confirmada.emit()
         self.close()
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    janela = TelaZeresima()
-    janela.exec()
