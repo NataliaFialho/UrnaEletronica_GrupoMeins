@@ -137,6 +137,15 @@ class PopUps(QMessageBox):
             "Não é permitido votar duas vezes."
         )
 
+    @classmethod
+    def titulo_invalido(cls, parent=None):
+
+        cls.acao_negada(
+            parent,
+            "Voto não permitido",
+            "Este título é inválido.\nVeja se foi digitado corretamente."
+        )
+
 
 
 def main():
