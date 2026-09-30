@@ -1,8 +1,9 @@
-import sys 
 from PySide6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, 
                                QLabel, QLineEdit, QPushButton, QFrame, QSpacerItem, QSizePolicy) 
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QPixmap 
+from PySide6.QtGui import QPixmap
+
+from Backend.eleitor import eleitores
  
 ESTILO_TELA_TITULO = """ 
             #cardPrincipal { 
@@ -70,12 +71,15 @@ ESTILO_TELA_TITULO = """
             } 
             """ 
  
-class TelaTituloEleitor(QWidget): 
+class TelaTituloEleitor(QWidget):
 
     cancelar_clicado = Signal()
+    titulo_validado = Signal(str)
 
-    def __init__(self): 
-        super().__init__() 
+    def __init__(self, eleitores):
+        super().__init__()
+
+        self.eleitores = eleitores
      
         self.setWindowTitle("Urna Eletrônica - Informar Título") 
         self.setMinimumSize(800, 500) 
@@ -140,7 +144,8 @@ class TelaTituloEleitor(QWidget):
         btn_cancelar.setObjectName("btnCancelar") 
  
         btn_continuar = QPushButton("Continuar") 
-        btn_continuar.setObjectName("btnContinuar") 
+        btn_continuar.setObjectName("btnContinuar")
+        btn_continuar.clicked.connect(self.validar_titulo)
  
         # Faz o Cancelar voltar para o menu
         btn_cancelar.clicked.connect(self.voltar_ao_menu)
@@ -157,11 +162,18 @@ class TelaTituloEleitor(QWidget):
  
         card.setStyleSheet(ESTILO_TELA_TITULO) 
 
+    def validar_titulo(self):
+        titulo = self.input_titulo.text().strip()
+
+        if titulo not in eleitores:
+            print("Título não encontrado.")
+            return
+
+        if eleitores[titulo]["votou"]:
+            print("Este eleitor já votou.")
+            return
+
+        self.titulo_validado.emit(titulo)
+
     def voltar_ao_menu(self):
         self.cancelar_clicado.emit()
- 
-if __name__ == "__main__": 
-    app = QApplication(sys.argv) 
-    tela = TelaTituloEleitor() 
-    tela.show() 
-    sys.exit(app.exec())
