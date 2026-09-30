@@ -5,10 +5,10 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QPixmap, QFont
 from PySide6.QtCore import Qt, Signal
 
-# from Backend.confirmar import confirmar
-# from Backend.corrigir import corrigir
-# from Backend.voto_branco import voto_branco
-# from Backend.candidatos import candidatos
+from Backend.confirmar import confirmar
+from Backend.corrigir import corrigir
+from Backend.voto_branco import voto_branco
+from Backend.candidatos import candidatos
 
 ESTILOS = """
 QWidget {
