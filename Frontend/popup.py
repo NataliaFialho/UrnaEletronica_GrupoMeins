@@ -1,6 +1,7 @@
 import sys
 
 from PySide6.QtWidgets import  QApplication, QMessageBox
+from PySide6.QtCore import Qt
 
 
 ESTILO_POPUP = """
@@ -68,6 +69,9 @@ class PopUps(QMessageBox):
         self.setText(mensagem)
         self.setIcon(icone)
         self.setStandardButtons(botoes)
+
+        for botao in self.buttons():
+            botao.setCursor(Qt.PointingHandCursor)
 
         # Aplica o estilo
         self.setStyleSheet(ESTILO_POPUP)
