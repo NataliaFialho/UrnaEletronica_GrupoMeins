@@ -5,7 +5,7 @@ from PySide6.QtGui import QPixmap
 
 from Backend.eleitor import eleitores
 
-from popup import *
+from Frontend.popup import PopUps
  
 ESTILO_TELA_TITULO = """ 
             #cardPrincipal { 
@@ -172,7 +172,7 @@ class TelaTituloEleitor(QWidget):
             return
 
         if eleitores[titulo]["votou"]:
-            PopUps.eleitor_ja_votou()
+            PopUps.eleitor_ja_votou(self)
             return
 
         self.titulo_validado.emit(titulo)

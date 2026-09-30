@@ -124,7 +124,7 @@ class PopUps(QMessageBox):
 
 
     @classmethod
-    def eleitor_ja_votou(cls, parent):
+    def eleitor_ja_votou(cls, parent=None):
 
         cls.acao_negada(
             parent,
