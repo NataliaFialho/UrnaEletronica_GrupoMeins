@@ -1,21 +1,21 @@
 from PySide6.QtWidgets import QMessageBox
-from Backend.corrigir import corrigir
-from Backend.candidatos import candidatos
-from Frontend.tela_confirmacao_candidato import TelaConfirmacaoCandidato
-from Backend.eleitor import eleitores
 
+from Backend.candidatos import candidatos
+from Backend.eleitor import eleitores
 
 def confirmar(urna):
 
     numero = urna.numero_digitado
 
-    # VOTO EM BRANCO
+    # Nenhum número foi digitado
     if not numero:
+
         QMessageBox.warning(
             urna,
             "Atenção",
             "Digite um número ou escolha BRANCO."
         )
+
         return
 
     # VOTO NULO
@@ -30,45 +30,42 @@ def confirmar(urna):
         )
 
         finalizar_votacao(urna)
+
         return
 
     # VOTO EM CANDIDATO
     candidato = candidatos[numero]
 
-    urna.tela_confirmacao = TelaConfirmacaoCandidato()
-
-    urna.tela_confirmacao.exibir_candidato(
+    urna.candidato_selecionado.emit(
         numero,
         candidato
     )
 
-    def confirmar_voto():
 
-        urna.votos[numero] += 1
+def registrar_voto(urna, numero):
 
-        QMessageBox.information(
-            urna,
-            "Voto",
-            f"Voto confirmado para {candidato['nome']}!"
-        )
+    if numero not in candidatos:
+        return False
 
-        urna.tela_confirmacao.close()
+    candidato = candidatos[numero]
 
-        finalizar_votacao(urna)
+    urna.votos[numero] += 1
 
-    def cancelar():
-        urna.tela_confirmacao.close()
+    QMessageBox.information(
+        urna,
+        "Voto",
+        f"Voto confirmado para {candidato['nome']}!"
+    )
 
-    urna.tela_confirmacao.confirmar_clicado.connect(confirmar_voto)
-    urna.tela_confirmacao.cancelar_clicado.connect(cancelar)
+    finalizar_votacao(urna)
 
-    urna.tela_confirmacao.show()
+    return True
 
 
 def finalizar_votacao(urna):
 
-    eleitores[urna.titulo_eleitor]["votou"] = True
-
-    print("Voto registrado com sucesso.")
+    eleitores[
+        urna.titulo_eleitor
+    ]["votou"] = True
 
     urna.votacao_finalizada.emit()

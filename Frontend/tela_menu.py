@@ -1,9 +1,9 @@
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QKeySequence, QShortcut
-from PySide6.QtWidgets import ( 
-    QLabel, 
-    QPushButton, 
-    QVBoxLayout, 
+from PySide6.QtWidgets import (
+    QLabel,
+    QPushButton,
+    QVBoxLayout,
     QWidget
 )
 
@@ -15,7 +15,7 @@ ESTILO_MENU = """
     }
 
     #tela_menu {
-        background-color:  #FFFFFF;
+        background-color: #FFFFFF;
     }
 
     #menu_titulo {
@@ -58,11 +58,10 @@ ESTILO_MENU = """
         color: #808080;
         border: 1px solid #b0b0b0;
     }
-
 """
 
 class TelaMenu(QWidget):
-    
+
     relatorio_inicial_clicado = Signal()
     votar_clicado = Signal()
     relatorio_final_clicado = Signal()
@@ -99,39 +98,56 @@ class TelaMenu(QWidget):
         layout.addWidget(subtitulo)
         layout.addSpacing(45)
 
-        self.botao_zeresima = (self._criar_botao(
-            "1", "Relatório Inicial (Zerésima)", self.relatorio_inicial_clicado
-        ))
+        self.botao_zeresima = self._criar_botao(
+            "1",
+            "Relatório Inicial (Zerésima)",
+            self.relatorio_inicial_clicado
+        )
 
+        self.botao_zeresima.clicked.connect(
+            self.habilitar_votar
+        )
 
-        self.botao_zeresima.clicked.connect(self.habilitar_votar)
         layout.addWidget(self.botao_zeresima)
-        
+
         layout.addSpacing(14)
 
-        self.botao_votar = (self._criar_botao(
-            "2", "Votar", self.votar_clicado
-        ))
+        self.botao_votar = self._criar_botao(
+            "2",
+            "Votar",
+            self.votar_clicado
+        )
 
         self.botao_votar.setEnabled(False)
+
         layout.addWidget(self.botao_votar)
 
         layout.addSpacing(14)
 
-        layout.addWidget(self._criar_botao(
-            "3", "Relatório Final", self.relatorio_final_clicado
-        ))
+        layout.addWidget(
+            self._criar_botao(
+                "3",
+                "Relatório Final",
+                self.relatorio_final_clicado
+            )
+        )
+
         layout.addSpacing(14)
 
-        layout.addWidget(self._criar_botao(
-            "4", "Sair", self.sair_clicado
-        ))
+        layout.addWidget(
+            self._criar_botao(
+                "4",
+                "Sair",
+                self.sair_clicado
+            )
+        )
 
         layout.addStretch()
 
         rodape = QLabel("")
         rodape.setAlignment(Qt.AlignCenter)
         rodape.setObjectName("menu_rodape")
+
         layout.addWidget(rodape)
 
         self.setLayout(layout)
