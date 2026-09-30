@@ -25,7 +25,7 @@ class JanelaPrincipal(QWidget):
         self.menu = TelaMenu()
         self.zeresima = TelaZeresima()
         self.boletim_urna = TelaBoletimUrna()
-        self.informar_titulo = TelaTituloEleitor()
+        self.informar_titulo = TelaTituloEleitor(eleitores)
 
         # A urna só será criada depois que o título for validado
         self.tela_urna = None
