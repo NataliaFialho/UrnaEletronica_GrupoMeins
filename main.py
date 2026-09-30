@@ -105,9 +105,6 @@ class JanelaPrincipal(QWidget):
 
         self.titulo_atual = titulo
 
-        print(f"Título validado: {titulo}")
-        print(f"Eleitor: {eleitores[titulo]['nome']}")
-
         self.tela_urna = UrnaEletronica(titulo)
 
         self.tela_urna.votacao_finalizada.connect(
