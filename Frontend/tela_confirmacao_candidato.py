@@ -1,4 +1,10 @@
-import os
+import os, sys
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DIRETORIO_PAI = os.path.dirname(BASE_DIR)
+sys.path.append(DIRETORIO_PAI)
+
+from Backend.som_confirmacao import tocar_som_confirmacao
 from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtGui import QKeySequence, QPixmap, QShortcut
 from PySide6.QtWidgets import (
@@ -9,9 +15,9 @@ from PySide6.QtWidgets import (
     QLabel,
     QPushButton,
 )
-from Backend.som_confirmacao import tocar_som_confirmacao
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
 
 ESTILO_CONFIRMACAO = """
 
@@ -224,3 +230,9 @@ class TelaConfirmacaoCandidato(QWidget):
                 Qt.SmoothTransformation,
             )
         )
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    janela = TelaConfirmacaoCandidato()
+    janela.show()
+    sys.exit(app.exec())
