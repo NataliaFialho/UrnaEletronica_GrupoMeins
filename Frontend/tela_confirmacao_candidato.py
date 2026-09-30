@@ -9,6 +9,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QPushButton,
 )
+from Backend.som_confirmacao import tocar_som_confirmacao
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -156,7 +157,7 @@ class TelaConfirmacaoCandidato(QWidget):
         botao_confirmar.setObjectName("botao_confirmar")
         botao_confirmar.setCursor(Qt.PointingHandCursor)
         botao_confirmar.setMinimumHeight(36)
-        botao_confirmar.clicked.connect(self.confirmar_clicado.emit)
+        botao_confirmar.clicked.connect(self._confirmar_voto)
 
         layout_botoes.addWidget(botao_cancelar)
         layout_botoes.addWidget(botao_confirmar)
@@ -172,14 +173,18 @@ class TelaConfirmacaoCandidato(QWidget):
     def _criar_atalhos(self):
 
         mapa_atalhos = {
-            "S": self.confirmar_clicado,
-            "Esc": self.cancelar_clicado,
+            "S": self._confirmar_voto,
+            "Esc": self.cancelar_clicado.emit,
         }
 
         for tecla, sinal in mapa_atalhos.items():
             atalho = QShortcut(QKeySequence(tecla), self)
-            atalho.activated.connect(sinal.emit)
+            atalho.activated.connect(sinal)
             self._atalhos.append(atalho)
+
+    def _confirmar_voto(self):
+        tocar_som_confirmacao()
+        self.confirmar_clicado.emit()
 
     @Slot(str, dict)
     def exibir_candidato(self, numero, candidato):
