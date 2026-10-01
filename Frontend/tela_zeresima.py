@@ -1,13 +1,14 @@
 import os
 
 from PySide6.QtCore import Qt, QDateTime, Signal
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWidgets import (
     QLabel,
     QPushButton,
     QScrollArea,
     QVBoxLayout,
     QWidget,
+    QHBoxLayout,
 )
 
 from Backend.urna_backend import UrnaBackend, urna_backend
@@ -19,19 +20,32 @@ ESTILO = """
     background: #F4F8FB;
     }
 
+    
+    QLabel {
+        background-color: transparent;
+    }
+
     QLabel#titulo {
     color: #283A50;
     font-size: 34px;
     font-weight: bold;
     }
 
-    QLabel#subtitulo {
+    QLabel#data {
     color: #283A50;
     font-size: 13px;
     font-weight: bold;
     }
 
+    #info_zerezima {
+        padding: 10px;
+        border-style: solid;
+        border-width: 0.5px;
+        border-color: #283A50;
+    }    
+
     QPushButton {
+        height: 30px;
         background: #FFFFFF;
         color: #283A50;
         border: 1px solid #C0CCD6;
@@ -63,20 +77,33 @@ class TelaZeresima(QWidget):
         self.backend = backend
 
         raiz_projeto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        icone = os.path.join(raiz_projeto, "Imagens", "icone_zeresima_preto.png")
-        self.setFixedSize(800, 500)
+        caminho_icone = os.path.join(raiz_projeto, "Imagens", "icone_zeresima.png")
+
+        self.setMinimumSize(800, 500)
         self.setWindowTitle("Relatório Inicial (Zerésima)")
-        self.setWindowIcon(QIcon(icone))
+        self.setWindowIcon(QIcon(caminho_icone))  # ícone da janela, se quiser manter
         self.setStyleSheet(ESTILO)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(25, 20, 25, 20)
         layout.setSpacing(10)
 
+        container_titulo = QHBoxLayout()           # sem parent
+        container_titulo.setSpacing(8)
+
+        icone_label = QLabel()                      # ícone precisa estar num QLabel
+        icone_label.setFixedSize(40, 40)
+        icone_label.setPixmap(
+            QPixmap(caminho_icone).scaled(40, 40, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        )
+
         self.titulo = QLabel("ZERÉSIMA")
         self.titulo.setObjectName("titulo")
-        self.titulo.setAlignment(Qt.AlignCenter)
-        layout.addWidget(self.titulo)
+
+        container_titulo.addWidget(icone_label)
+        container_titulo.addWidget(self.titulo)
+
+        layout.addLayout(container_titulo)          # addLayout, não addWidget
 
         self.data_horario = QLabel()
         self.data_horario.setObjectName("data")
@@ -89,6 +116,7 @@ class TelaZeresima(QWidget):
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setWidget(self.conteudo)
+        scroll.setObjectName("info_zerezima")
         layout.addWidget(scroll, 1)
 
         botoes = QVBoxLayout()
@@ -125,13 +153,3 @@ class TelaZeresima(QWidget):
             f"Eleitores aptos: {boletim.eleitores_aptos}\n"
             f"{eleitores}"
         )
-
-
-if __name__ == "__main__":
-    from PySide6.QtWidgets import QApplication
-    import sys
-
-    app = QApplication(sys.argv)
-    janela = TelaZeresima()
-    janela.show()
-    sys.exit(app.exec())
