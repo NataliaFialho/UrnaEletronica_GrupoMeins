@@ -10,7 +10,7 @@ from Frontend.tela_de_voto import UrnaEletronica
 from Frontend.tela_informar_titulo import TelaTituloEleitor
 from Frontend.tela_menu import TelaMenu
 from Frontend.tela_zeresima import TelaZeresima
-
+from Backend.eleitor import eleitores
 
 class JanelaPrincipal(QWidget):
     def __init__(self, backend: UrnaBackend = urna_backend):
@@ -22,7 +22,7 @@ class JanelaPrincipal(QWidget):
         self.menu = TelaMenu()
         self.zeresima = TelaZeresima(backend)
         self.boletim_urna = TelaBoletimUrna(backend)
-        self.informar_titulo = TelaTituloEleitor()
+        self.informar_titulo = TelaTituloEleitor(eleitores)
         self.confirmacao = TelaConfirmacaoCandidato()
         self.tela_urna = None
         self.titulo_atual = None

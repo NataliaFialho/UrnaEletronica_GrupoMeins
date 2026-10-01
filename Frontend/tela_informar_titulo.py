@@ -186,6 +186,19 @@ class TelaTituloEleitor(QWidget):
 
     def limpar(self):
         self.input_titulo.clear()
+
+    def validar_titulo(self):
+        titulo = self.input_titulo.text().strip()
+ 
+        if titulo not in eleitores:
+            print("Título não encontrado.")
+            return
+ 
+        if eleitores[titulo]["votou"]:
+            PopUps.eleitor_ja_votou(self)
+            return
+ 
+        self.titulo_validado.emit(titulo)
  
 if __name__ == "__main__": 
     app = QApplication(sys.argv) 
