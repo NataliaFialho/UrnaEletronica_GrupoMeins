@@ -1,5 +1,4 @@
 import os
-import sys
 from PySide6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout,
                                QLabel, QLineEdit, QPushButton, QFrame, QSpacerItem, QSizePolicy,
                                QMessageBox)
@@ -7,22 +6,23 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPixmap
 
 from Backend.eleitor import eleitores
-
 from Frontend.popup import PopUps
  
 ESTILO_TELA_TITULO = """ 
-            #cardPrincipal { 
-                background-color: white; 
-                border: 1px solid #dcdcdc; 
+            #cardPrincipal {
+                background-color: white;
+                border: 1px solid #dcdcdc;
                 border-radius: 8px; 
-            } 
-            #tituloVotar { 
+            }
+            #tituloVotar {
+                font-family: Arial;
                 font-size: 17px; 
                 font-weight: bold; 
                 color: #1a2a40; 
                 background-color: white; 
             } 
-            #subtitulo { 
+            #subtitulo {
+                font-family: Arial;
                 font-size: 13px; 
                 color: #6b7280; 
                 background-color: white; 
@@ -32,7 +32,8 @@ ESTILO_TELA_TITULO = """
                 border-radius: 6px; 
                 background-color: #DBDBDB; 
             } 
-            #labelInput { 
+            #labelInput {
+                font-family: Arial;
                 font-size: 13px; 
                 font-weight: bold; 
                 color: #374151; 
@@ -42,7 +43,8 @@ ESTILO_TELA_TITULO = """
             #inputTitulo { 
                 border: 1px solid #d1d5db; 
                 border-radius: 4px; 
-                padding: 10px; 
+                padding: 10px;
+                font-family: Arial;
                 font-size: 13px; 
                 background-color: #ffffff; 
                 color: #333333; 
@@ -55,7 +57,8 @@ ESTILO_TELA_TITULO = """
                 color: #4b5563; 
                 border: 1px solid #d1d5db; 
                 border-radius: 4px; 
-                padding: 8px 20px; 
+                padding: 8px 20px;
+                font-family: Arial;
                 font-weight: bold; 
                 font-size: 13px; 
             } 
@@ -67,13 +70,17 @@ ESTILO_TELA_TITULO = """
                 color: white; 
                 border: none; 
                 border-radius: 4px; 
-                padding: 8px 20px; 
-                font-weight: bold; 
+                padding: 8px 20px;
+                font-family: Arial;
+                font-weight: bold;
                 font-size: 13px; 
             } 
             #btnContinuar:hover { 
                 background-color: #4a6b8c; 
             } 
+            #icone {
+                background-color: transparent;
+            }
             """ 
  
 class TelaTituloEleitor(QWidget): 
@@ -107,6 +114,7 @@ class TelaTituloEleitor(QWidget):
         raiz_projeto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         caminho_icone = os.path.join(raiz_projeto, "Imagens", "icone_titulo_eleitoral.png")
         icone_label.setPixmap(QPixmap(caminho_icone))
+        icone_label.setObjectName("icone")
  
         textos_layout = QVBoxLayout() 
         textos_layout.setSpacing(2) 
@@ -199,9 +207,3 @@ class TelaTituloEleitor(QWidget):
             return
  
         self.titulo_validado.emit(titulo)
- 
-if __name__ == "__main__": 
-    app = QApplication(sys.argv) 
-    tela = TelaTituloEleitor() 
-    tela.show() 
-    sys.exit(app.exec())

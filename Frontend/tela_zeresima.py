@@ -27,58 +27,58 @@ class TelaZeresima(QWidget):
         self.setWindowIcon(QIcon(icone))
         self.setStyleSheet("""
             QWidget {
-                    font-family: Arial; 
-                    font-size: 16px; 
-                    background: #F4F8FB;
-                }
+                font-family: Arial; 
+                font-size: 16px; 
+                background: #F4F8FB;
+            }
                 
-                QLabel {
-                    background-color: white;
-                }
+            QLabel {
+                background-color: white;
+            }
 
-                QLabel#titulo {
-                    background-color: transparent;
-                    color: #283A50;
-                    font-size: 34px;
-                    font-weight: bold;
-                }
+            QLabel#titulo {
+                background-color: transparent;
+                color: #283A50;
+                font-size: 34px;
+                font-weight: bold;
+            }
 
-                QLabel#data {
-                    background-color: transparent;
-                    color: #283A50;
-                    font-size: 13px;
-                    font-weight: bold;
-                }
+            QLabel#data {
+                background-color: transparent;
+                color: #283A50;
+                font-size: 13px;
+                font-weight: bold;
+            }
 
-                #info_zerezima {
-                    padding: 10px;
-                    border-style: solid;
-                    border-width: 0.5px;
-                    border-color: #283A50;
-                }    
+            #info_zerezima {
+                padding: 10px;
+                border-style: solid;
+                border-width: 0.5px;
+                border-color: #283A50;
+            }    
 
-                QPushButton {
-                    height: 30px;
-                    background: #FFFFFF;
-                    color: #283A50;
-                    border: 1px solid #C0CCD6;
-                    border-radius: 10px;
-                    font-size: 17px;
-                    font-weight: 600;
-                    text-align: center;
-                    padding-left: 24px;
-                }
+            QPushButton {
+                height: 30px;
+                background: #FFFFFF;
+                color: #283A50;
+                border: 1px solid #C0CCD6;
+                border-radius: 10px;
+                font-size: 17px;
+                font-weight: 600;
+                text-align: center;
+                padding-left: 24px;
+            }
 
-                QPushButton:hover:enabled {
-                    background: #b6c1d1;
-                }
+            QPushButton:hover:enabled {
+                background: #b6c1d1;
+            }
 
-                QPushButton:disabled {
-                    background: #e4e4e4;
-                    color: #888;
-                    border-color: #bbb;
-                }
-            """)
+            QPushButton:disabled {
+                background: #e4e4e4;
+                color: #888;
+                border-color: #bbb;
+            }
+        """)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(25, 20, 25, 20)
