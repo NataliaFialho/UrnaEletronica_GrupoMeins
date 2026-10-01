@@ -152,19 +152,26 @@ class JanelaPrincipal(QWidget):
         if not self.backend.eleicao_iniciada or self.backend.urna_fechada:
             self._atualizar_menu()
             return
-        resposta = QMessageBox.question(
-            self,
-            "Encerrar votação",
-            "Deseja encerrar a eleição? Não será mais possível registrar votos.",
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No,
-        )
-        if resposta != QMessageBox.Yes:
+
+        msg = QMessageBox(self)
+        msg.setWindowTitle("Encerrar votação")
+        msg.setText("Deseja encerrar a eleição? Não será mais possível registrar votos.")
+
+        botao_sim = msg.addButton("Sim", QMessageBox.YesRole)
+        botao_nao = msg.addButton("Não", QMessageBox.NoRole)
+
+        msg.setDefaultButton(botao_nao)
+        msg.exec()
+
+        if msg.clickedButton() != botao_sim:
             return
+
         ok, mensagem = self.backend.encerrar_eleicao()
+
         if not ok:
             QMessageBox.warning(self, "Encerrar votação", mensagem)
             return
+
         self._atualizar_menu()
         QMessageBox.information(self, "Votação encerrada", mensagem)
 
@@ -179,13 +186,11 @@ class JanelaPrincipal(QWidget):
     def confirmar_boletim(self):
         self.stack.setCurrentWidget(self.menu)
 
-
 def main():
     app = QApplication(sys.argv)
     janela = JanelaPrincipal()
     janela.show()
     sys.exit(app.exec())
-
 
 if __name__ == "__main__":
     main()
