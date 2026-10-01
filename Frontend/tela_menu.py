@@ -1,16 +1,8 @@
+import sys
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import QLabel, QPushButton, QVBoxLayout, QWidget, QApplication
 
-class TelaMenu(QWidget):
-    relatorio_inicial_clicado = Signal()
-    votar_clicado = Signal()
-    encerrar_votacao_clicado = Signal()
-    relatorio_final_clicado = Signal()
-    sair_clicado = Signal()
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setStyleSheet("""
+ESTILO_MENU = """
             QWidget {
             font-family: Arial; 
             font-size: 16px; 
@@ -49,7 +41,19 @@ class TelaMenu(QWidget):
             color: #888;
             border-color: #bbb;
             }
-        """)
+        """
+
+class TelaMenu(QWidget):
+    relatorio_inicial_clicado = Signal()
+    votar_clicado = Signal()
+    encerrar_votacao_clicado = Signal()
+    relatorio_final_clicado = Signal()
+    sair_clicado = Signal()
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setFixedSize(800, 500)
+        self.setStyleSheet(ESTILO_MENU)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(90, 32, 90, 28)
