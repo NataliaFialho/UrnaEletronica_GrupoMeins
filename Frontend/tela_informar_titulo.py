@@ -1,5 +1,8 @@
-from PySide6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, 
-                               QLabel, QLineEdit, QPushButton, QFrame, QSpacerItem, QSizePolicy) 
+import os
+import sys
+from PySide6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout,
+                               QLabel, QLineEdit, QPushButton, QFrame, QSpacerItem, QSizePolicy,
+                               QMessageBox)
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPixmap
 
@@ -73,8 +76,8 @@ ESTILO_TELA_TITULO = """
             } 
             """ 
  
-class TelaTituloEleitor(QWidget):
-
+class TelaTituloEleitor(QWidget): 
+    titulo_validado = Signal(str)
     cancelar_clicado = Signal()
     titulo_validado = Signal(str)
 
@@ -100,8 +103,10 @@ class TelaTituloEleitor(QWidget):
  
         header_layout = QHBoxLayout() 
          
-        icone_label = QLabel() 
-        icone_label.setPixmap(QPixmap("Imagens/icone_titulo_eleitoral.png")) 
+        icone_label = QLabel()
+        raiz_projeto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        caminho_icone = os.path.join(raiz_projeto, "Imagens", "icone_titulo_eleitoral.png")
+        icone_label.setPixmap(QPixmap(caminho_icone))
  
         textos_layout = QVBoxLayout() 
         textos_layout.setSpacing(2) 
@@ -133,6 +138,8 @@ class TelaTituloEleitor(QWidget):
         self.input_titulo = QLineEdit() 
         self.input_titulo.setPlaceholderText("Digite o número do seu título") 
         self.input_titulo.setObjectName("inputTitulo") 
+        self.input_titulo.setMaxLength(20)
+        self.input_titulo.returnPressed.connect(self.continuar_para_votar)
  
         input_layout.addWidget(label_input) 
         input_layout.addWidget(self.input_titulo) 
@@ -153,10 +160,11 @@ class TelaTituloEleitor(QWidget):
  
         # Faz o Cancelar voltar para o menu
         btn_cancelar.clicked.connect(self.voltar_ao_menu)
+        btn_continuar.clicked.connect(self.continuar_para_votar)
 
-        botoes_layout.addWidget(btn_cancelar) 
-        botoes_layout.addWidget(btn_continuar) 
- 
+        botoes_layout.addWidget(btn_cancelar)
+        botoes_layout.addWidget(btn_continuar)
+
         card_layout.addLayout(header_layout) 
         card_layout.addWidget(input_frame) 
         card_layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding)) 
@@ -166,18 +174,21 @@ class TelaTituloEleitor(QWidget):
  
         card.setStyleSheet(ESTILO_TELA_TITULO) 
 
-    def validar_titulo(self):
+    def continuar_para_votar(self):
         titulo = self.input_titulo.text().strip()
-
-        if titulo not in eleitores:
-            print("Título não encontrado.")
+        if not titulo:
+            QMessageBox.warning(self, "Atenção", "Digite o título eleitoral.")
             return
-
-        if eleitores[titulo]["votou"]:
-            PopUps.eleitor_ja_votou(self)
-            return
-
         self.titulo_validado.emit(titulo)
 
     def voltar_ao_menu(self):
         self.cancelar_clicado.emit()
+
+    def limpar(self):
+        self.input_titulo.clear()
+ 
+if __name__ == "__main__": 
+    app = QApplication(sys.argv) 
+    tela = TelaTituloEleitor() 
+    tela.show() 
+    sys.exit(app.exec())

@@ -1,194 +1,102 @@
-import sys, os
+import os
+
 from PySide6.QtCore import Qt, QDateTime, Signal
-from PySide6.QtGui import QIcon, QPixmap
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
-    QApplication,
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
     QLabel,
     QPushButton,
-    QDialog,
-    QScrollArea
+    QScrollArea,
+    QVBoxLayout,
+    QWidget,
 )
 
-from Backend.candidatos import candidatos
-from Backend.eleitor import eleitores
-from Backend.atualizar_candidatos import atualizar_candidatos
-from Backend.atualizar_eleitores import atualizar_eleitores
+from Backend.urna_backend import UrnaBackend, urna_backend
 
-ESTILO_MENU = """
-    QWidget {
-        font-family: Arial;
-        font-size: 16px;
-    }
 
-    #info_zeresima {
-        border-width: 1px;
-        border-style: solid;
-        border-color: black;
-        border-radius: 5px;
-    }
-
-    #tela_menu {
-        background-color:  #FFFFFF;
-    }
-
-    #zeresima_titulo {
-        color: #000000;
-        font-size: 36px;
-        font-weight: bold;
-    }
-
-    #zeresima_data {
-        color: #000000;
-        font-size: 13px;
-        font-weight: bold;
-        padding-top: 6px;
-        padding-bottom: 10px;
-    }
-
-    #menu_rodape {
-        color: #4d5a75;
-        font-size: 12px;
-    }
-
-    #menu_botao {
-        background-color: #FFFFFF;
-        color: #000000;
-        border: 1px solid #2c3648;
-        border-radius: 10px;
-        font-size: 18px;
-        font-weight: 600;
-        text-align: left;
-        padding-left: 26px;
-        text-align: center;
-    }
-
-    #menu_botao:hover {
-        background-color: #F8F8FF;
-        border-color: #3d4a63;
-    }
-
-    #info_zeresima_scroll {
-        border-width: 1px;
-        border-style: solid;
-        border-color: black;
-        border-radius: 5px;
-    }
- 
-    QScrollArea {
-        background: transparent;
-    }
- 
-    QScrollArea > QWidget > QWidget {
-        background: transparent;
-    }
- 
-    #zeresima_conteudo {
-        background: transparent;
-    }
-"""
-
-class TelaZeresima(QDialog):
-
+class TelaZeresima(QWidget):
     zeresima_confirmada = Signal()
+    zeresima_cancelada = Signal()
 
-    def __init__(self, parent=None):
+    def __init__(self, backend: UrnaBackend = urna_backend, parent=None):
         super().__init__(parent)
+        self.backend = backend
 
+        raiz_projeto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        icone = os.path.join(raiz_projeto, "Imagens", "icone_zeresima_preto.png")
         self.setFixedSize(800, 500)
         self.setWindowTitle("Relatório Inicial (Zerésima)")
-        self.setWindowIcon(QIcon("Imagens/icone_zeresima_preto.png"))
+        self.setWindowIcon(QIcon(icone))
+        self.setStyleSheet("""
+            QWidget { font-family: Arial; font-size: 14px; }
+            QLabel#titulo { color: #000; font-size: 30px; font-weight: bold; }
+            QLabel#data { color: #333; font-weight: bold; }
+            QPushButton { background: white; border: 1px solid #2c3648;
+                border-radius: 8px; padding: 10px; font-size: 15px; }
+        """)
 
         layout = QVBoxLayout(self)
+        layout.setContentsMargins(25, 20, 25, 20)
         layout.setSpacing(10)
-        layout.setAlignment(Qt.AlignTop)
-        layout.setContentsMargins(25, 25, 25, 25)
 
-        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-        icone_path = os.path.join(BASE_DIR, "..", "Imagens", "icone_zeresima_preto.png")
+        self.titulo = QLabel("ZERÉSIMA")
+        self.titulo.setObjectName("titulo")
+        self.titulo.setAlignment(Qt.AlignCenter)
+        layout.addWidget(self.titulo)
 
-        container = QHBoxLayout()
-        container.setSpacing(8)
-        container.setContentsMargins(0, 0, 0, 0)
+        self.data_horario = QLabel()
+        self.data_horario.setObjectName("data")
+        layout.addWidget(self.data_horario)
 
-        icone_tela_zeresima = QLabel()
-        icone_tela_zeresima.setFixedSize(56,56)
-        icone_tela_zeresima.setContentsMargins(0, 0, 0, 0)
-        icone_tela_zeresima.setPixmap(QPixmap(icone_path).scaled(56, 56, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        self.conteudo = QLabel()
+        self.conteudo.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.conteudo.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        self.conteudo.setWordWrap(True)
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setWidget(self.conteudo)
+        layout.addWidget(scroll, 1)
 
-        titulo_tela_zeresima = QLabel("ZERÉSIMA")
-        titulo_tela_zeresima.setObjectName("zeresima_titulo")
+        botoes = QVBoxLayout()
+        botao_voltar = QPushButton("Voltar ao Menu")
+        botao_voltar.clicked.connect(lambda checked=False: self.zeresima_cancelada.emit())
+        botoes.addWidget(botao_voltar)
 
-        container.addWidget(icone_tela_zeresima)
-        container.addWidget(titulo_tela_zeresima)
+        self.botao_confirmar = QPushButton("Confirmar zerésima e iniciar votação")
+        self.botao_confirmar.clicked.connect(lambda checked=False: self.zeresima_confirmada.emit())
+        botoes.addWidget(self.botao_confirmar)
+        layout.addLayout(botoes)
 
-        layout.addLayout(container)
+        self.atualizar_dados()
 
-        self.data_horario_zeresima = QLabel()
-        self.data_horario_zeresima.setObjectName("zeresima_data")
-        layout.addWidget(self.data_horario_zeresima)
+    def atualizar_dados(self):
+        agora = QDateTime.currentDateTime().toString("dd/MM/yyyy, HH:mm:ss")
+        self.data_horario.setText(f"Data e horário da emissão: {agora}")
+        boletim = self.backend.boletim_atual()
+        candidatos = "\n".join(
+            f"{codigo} - {self.backend.candidatos[codigo]['nome']} "
+            f"({self.backend.candidatos[codigo]['partido']}) - Votos: {votos}"
+            for codigo, votos in boletim.votos_por_candidato.items()
+        )
+        eleitores = "\n".join(
+            f"{titulo} - {dados['nome']} (Não votou)"
+            for titulo, dados in self.backend.eleitores.items()
+        )
+        self.conteudo.setText(
+            "Candidatos\n"
+            f"{candidatos}\n\n"
+            f"Votos em branco: {boletim.votos_brancos}\n"
+            f"Votos nulos: {boletim.votos_nulos}\n"
+            f"Votos totais: {boletim.votos_totais}\n\n"
+            f"Eleitores aptos: {boletim.eleitores_aptos}\n"
+            f"{eleitores}"
+        )
 
-        self.registrar_horario()
-
-        conteudo_zeresima = QWidget()
-        conteudo_zeresima.setObjectName ("zeresima_conteudo")
-        conteudo_zeresima.setMinimumHeight (450)
-
-        layout_info = QVBoxLayout(conteudo_zeresima)
-        layout_info.setSpacing(1)
-        layout_info.setAlignment(Qt.AlignTop)
-        layout_info.setContentsMargins(25, 25, 25, 25)
-
-        self.candidatos_zeresima = QLabel()
-        self.candidatos_zeresima.setWordWrap(True)
-        layout_info.addWidget(self.candidatos_zeresima)
-
-        atualizar_candidatos(self.candidatos_zeresima, candidatos)
-
-        layout_info.addStretch()
-
-        votos_em_branco_zeresima = QLabel("Votos em branco:")
-        layout_info.addWidget(votos_em_branco_zeresima)
-
-        votos_em_nulo_zeresima = QLabel("Votos Nulos:")
-        layout_info.addWidget(votos_em_nulo_zeresima)
-
-        layout_info.addStretch()
-
-        self.eleitores_aptos_zeresima = QLabel()
-        layout_info.addWidget(self.eleitores_aptos_zeresima)
-
-        atualizar_eleitores(self.eleitores_aptos_zeresima, eleitores)
-
-        scroll_zeresima = QScrollArea()
-        scroll_zeresima.setObjectName ("info_zeresima_scroll")
-        scroll_zeresima.setWidgetResizable(True)
-        scroll_zeresima.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        scroll_zeresima.setWidget(conteudo_zeresima)
-
-        layout.addWidget(scroll_zeresima, 1)
-
-        botao_voltar_ao_menu = QPushButton("Voltar ao Menu")
-        botao_voltar_ao_menu.setObjectName("menu_botao")
-        botao_voltar_ao_menu.setCursor(Qt.PointingHandCursor)
-        layout.addWidget(botao_voltar_ao_menu)
-
-        self.setStyleSheet(ESTILO_MENU)
-
-        botao_voltar_ao_menu.clicked.connect(self.voltar_ao_menu)
-
-    def registrar_horario(self):
-        horario_zeresima_emitida = QDateTime.currentDateTime()
-        horario_formatado = horario_zeresima_emitida.toString("dd/MM/yyyy, HH:mm:ss")
-        self.data_horario_zeresima.setText(f"Data e Horário da Emissão: {horario_formatado}")
-        
-    def voltar_ao_menu(self):
-        self.zeresima_confirmada.emit()
-        self.close()
 
 if __name__ == "__main__":
+    from PySide6.QtWidgets import QApplication
+    import sys
+
     app = QApplication(sys.argv)
     janela = TelaZeresima()
-    janela.exec()
+    janela.show()
+    sys.exit(app.exec())

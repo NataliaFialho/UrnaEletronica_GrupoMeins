@@ -1,214 +1,97 @@
-import sys, os
+import os
+
 from PySide6.QtCore import Qt, QDateTime, Signal
-from PySide6.QtGui import QIcon, QPixmap
-from PySide6.QtWidgets import (
-    QApplication,
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
-    QLabel,
-    QPushButton,
-    QFrame,
-    QScrollArea
-)
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import QLabel, QPushButton, QScrollArea, QVBoxLayout, QWidget
 
-ESTILO_MENU = """
-
-    QWidget {
-        font-family: Arial;
-        font-size: 16px;
-    }
-
-    #info_boletim_urna {
-        border-width: 1px;
-        border-style: solid;
-        border-color: black;
-        border-radius: 5px;
-    }
-
-    QScrollArea {
-        background: transparent;
-    }
-
-    QScrollArea > QWidget > QWidget {
-        background: transparent;
-    }
-
-    #conteudo_boletim {
-        background: transparent;
-    }
-
-    #tela_menu {
-        background-color:  #FFFFFF;
-    }
-
-    #boletim_urna_titulo {
-        color: #000000;
-        font-size: 36px;
-        font-weight: bold;
-    }
-
-    #zeresima_data {
-        color: #000000;
-        font-size: 13px;
-        font-weight: bold;
-        padding-top: 6px;
-        padding-bottom: 10px;
-    }
-
-    #menu_rodape {
-        color: #4d5a75;
-        font-size: 12px;
-    }
-
-    #menu_botao {
-        background-color: #FFFFFF;
-        color: #000000;
-        border: 1px solid #2c3648;
-        border-radius: 10px;
-        font-size: 18px;
-        font-weight: 600;
-        padding-left: 26px;
-        text-align: center;
-    }
-
-    #menu_botao:hover {
-        background-color: #F8F8FF;
-        border-color: #3d4a63;
-    }
-
-"""
+from Backend.urna_backend import UrnaBackend, urna_backend
 
 
 class TelaBoletimUrna(QWidget):
-
     boletim_confirmado = Signal()
 
-    def __init__(self, parent=None):
+    def __init__(self, backend: UrnaBackend = urna_backend, parent=None):
         super().__init__(parent)
+        self.backend = backend
+
+        raiz_projeto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        icone = os.path.join(raiz_projeto, "Imagens", "icone_boletim_urna.png")
+        self.setWindowTitle("Boletim de Urna")
+        self.setWindowIcon(QIcon(icone))
+        self.setStyleSheet("""
+            QWidget { font-family: Arial; font-size: 14px; }
+            QLabel#titulo { color: #000; font-size: 30px; font-weight: bold; }
+            QLabel#data { color: #333; font-weight: bold; }
+            QPushButton { background: white; border: 1px solid #2c3648;
+                border-radius: 8px; padding: 10px; font-size: 15px; }
+        """)
 
         layout = QVBoxLayout(self)
+        layout.setContentsMargins(25, 20, 25, 20)
         layout.setSpacing(10)
-        layout.setContentsMargins(25, 25, 25, 25)
 
-        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-        icone_path = os.path.join(
-            BASE_DIR, "..", "Imagens", "icone_boletim_urna.png"
-        )
+        titulo = QLabel("BOLETIM DE URNA")
+        titulo.setObjectName("titulo")
+        titulo.setAlignment(Qt.AlignCenter)
+        layout.addWidget(titulo)
 
-        # ---------- Título com ícone ----------
-        container = QHBoxLayout()
-        container.setSpacing(12)
-        container.setContentsMargins(0, 0, 0, 0)
+        self.data_horario = QLabel()
+        self.data_horario.setObjectName("data")
+        layout.addWidget(self.data_horario)
 
-        icone_tela_boletim_urna = QLabel()
-        icone_tela_boletim_urna.setFixedSize(56, 56)
-        icone_tela_boletim_urna.setPixmap(
-            QPixmap(icone_path).scaled(
-                56,
-                56,
-                Qt.KeepAspectRatio,
-                Qt.SmoothTransformation
+        self.conteudo = QLabel()
+        self.conteudo.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        self.conteudo.setWordWrap(True)
+        self.conteudo.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setWidget(self.conteudo)
+        layout.addWidget(scroll, 1)
+
+        botao_voltar = QPushButton("Voltar ao Menu")
+        botao_voltar.clicked.connect(lambda checked=False: self.boletim_confirmado.emit())
+        layout.addWidget(botao_voltar)
+
+        self.atualizar_dados()
+
+    def atualizar_dados(self):
+        agora = QDateTime.currentDateTime().toString("dd/MM/yyyy, HH:mm:ss")
+        self.data_horario.setText(f"Data e horário da emissão: {agora}")
+        boletim = self.backend.boletim_atual()
+
+        linhas_candidatos = [
+            f"{codigo} - {self.backend.candidatos[codigo]['nome']}: {votos} voto(s)"
+            for codigo, votos in boletim.votos_por_candidato.items()
+        ]
+        if boletim.empate:
+            resultado = "Empate entre: " + ", ".join(
+                self.backend.candidatos[codigo]["nome"] for codigo in boletim.vencedor
             )
+        elif boletim.vencedor:
+            codigo = boletim.vencedor[0]
+            resultado = f"Vencedor: {self.backend.candidatos[codigo]['nome']} ({boletim.votos_por_candidato[codigo]} voto(s))"
+        else:
+            resultado = "Sem votos válidos para candidato."
+
+        self.conteudo.setText(
+            f"{resultado}\n\n"
+            "Votos por candidato\n"
+            f"{chr(10).join(linhas_candidatos)}\n\n"
+            f"Votos em branco: {boletim.votos_brancos}\n"
+            f"Votos nulos: {boletim.votos_nulos}\n"
+            f"Votos totais: {boletim.votos_totais}\n\n"
+            f"Eleitores aptos: {boletim.eleitores_aptos}\n"
+            f"Comparecimentos: {boletim.comparecimentos}\n"
+            f"Abstenções: {boletim.abstencoes}\n\n"
+            f"Situação dos eleitores\n{boletim.situacao_eleitores}"
         )
-
-        titulo_tela_boletim_urna = QLabel("BOLETIM DE URNA")
-        titulo_tela_boletim_urna.setObjectName("boletim_urna_titulo")
-
-        container.addWidget(icone_tela_boletim_urna)
-        container.addWidget(titulo_tela_boletim_urna)
-        container.addStretch()
-
-        layout.addLayout(container)
-
-        self.data_horario_boletim_urna = QLabel()
-        self.data_horario_boletim_urna.setObjectName("zeresima_data")
-        layout.addWidget(self.data_horario_boletim_urna)
-
-        self.registrar_horario()
-
-        conteudo_boletim = QWidget()
-        conteudo_boletim.setObjectName("conteudo_boletim")
-        conteudo_boletim.setMinimumHeight(450)
-
-        layout_info = QVBoxLayout(conteudo_boletim)
-        layout_info.setSpacing(1)
-        layout_info.setAlignment(Qt.AlignTop)
-        layout_info.setContentsMargins(25, 25, 25, 25)
-
-        vencedor_boletim_urna = QLabel("Candidato vencedor: ")
-        layout_info.addWidget(vencedor_boletim_urna)
-
-        candidatos_boletim_urna = QLabel("Votos por candidato: ")
-        layout_info.addWidget(candidatos_boletim_urna)
-
-        layout_info.addStretch()
-
-        votos_em_branco_boletim_urna = QLabel("Votos em branco:")
-        layout_info.addWidget(votos_em_branco_boletim_urna)
-
-        votos_em_nulo_boletim_urna = QLabel("Votos Nulos:")
-        layout_info.addWidget(votos_em_nulo_boletim_urna)
-
-        votos_totais_boletim_urna = QLabel("Votos Totais:")
-        layout_info.addWidget(votos_totais_boletim_urna)
-
-        layout_info.addStretch()
-
-        eleitores_aptos_boletim_urna = QLabel("Eleitores aptos:")
-        layout_info.addWidget(eleitores_aptos_boletim_urna)
-
-        comparecimentos_boletim_urna = QLabel("Comparecimentos:")
-        layout_info.addWidget(comparecimentos_boletim_urna)
-
-        abstencoes_boletim_urna = QLabel("Abstenções:")
-        layout_info.addWidget(abstencoes_boletim_urna)
-
-        layout_info.addStretch()
-
-        empate_boletim_urna = QLabel("Empate entre candidatos: ")
-        layout_info.addWidget(empate_boletim_urna)
-
-        layout_info.addStretch()
-
-        situacao_eleitores_boletim_urna = QLabel("Situação dos eleitores:")
-        layout_info.addWidget(situacao_eleitores_boletim_urna)
-
-        scroll_boletim_urna = QScrollArea()
-        scroll_boletim_urna.setObjectName("info_boletim_urna")
-        scroll_boletim_urna.setWidgetResizable(True)
-        scroll_boletim_urna.setHorizontalScrollBarPolicy(
-            Qt.ScrollBarAlwaysOff
-        )
-        scroll_boletim_urna.setWidget(conteudo_boletim)
-
-        layout.addWidget(scroll_boletim_urna, 1)
-
-        botao_voltar_ao_menu = QPushButton("Voltar ao Menu")
-        botao_voltar_ao_menu.setObjectName("menu_botao")
-        botao_voltar_ao_menu.setCursor(Qt.PointingHandCursor)
-       
-        layout.addWidget(botao_voltar_ao_menu)
-
-        self.setStyleSheet(ESTILO_MENU)
-
-        botao_voltar_ao_menu.clicked.connect(self.voltar_ao_menu)
-
-    def registrar_horario(self):
-        horario_emitido = QDateTime.currentDateTime()
-        horario_formatado = horario_emitido.toString(
-            "dd/MM/yyyy, HH:mm:ss"
-        )
-        self.data_horario_boletim_urna.setText(
-            f"Data e Horário da Emissão: {horario_formatado}"
-        )
-
-    def voltar_ao_menu(self):
-        self.boletim_confirmado.emit()
 
 
 if __name__ == "__main__":
+    import sys
+    from PySide6.QtWidgets import QApplication
+
     app = QApplication(sys.argv)
-    window = TelaBoletimUrna()
-    window.show()
+    janela = TelaBoletimUrna()
+    janela.show()
     sys.exit(app.exec())

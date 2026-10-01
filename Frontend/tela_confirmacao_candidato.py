@@ -1,235 +1,98 @@
-import os, sys
+import sys
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DIRETORIO_PAI = os.path.dirname(BASE_DIR)
-sys.path.append(DIRETORIO_PAI)
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import QApplication, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
 
-from Backend.som_confirmacao import tocar_som_confirmacao
-from PySide6.QtCore import Qt, Signal, Slot
-from PySide6.QtGui import QKeySequence, QPixmap, QShortcut
-from PySide6.QtWidgets import (
-    QApplication,
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
-    QLabel,
-    QPushButton,
-)
-
-
-
-
-ESTILO_CONFIRMACAO = """
-
-    QWidget {
-        font-family: Arial;
-        font-size: 16px;
-    }
-
-    #tela_confirmacao {
-        background-color: #FFFFFF;
-    }
-
-    #confirmacao_foto {
-        background-color: #F8F8FF;
-        border: 1px solid #2c3648;
-        border-radius: 10px;
-        color: #4d5a75;
-        font-size: 13px;
-    }
-
-    #confirmacao_numero {
-        color: #000000;
-        font-size: 18px;
-        font-weight: bold;
-    }
-
-    #confirmacao_nome {
-        color: #000000;
-        font-size: 18px;
-        font-weight: bold;
-    }
-
-    #confirmacao_partido {
-        color: #000000;
-        font-size: 18px;
-    }
-
-    #confirmacao_pergunta {
-        color: #000000;
-        font-size: 16px;
-        font-weight: 600;
-    }
-
-    #menu_botao {
-        background-color: #FFFFFF;
-        color: #000000;
-        border: 1px solid #2c3648;
-        border-radius: 10px;
-        font-size: 18px;
-        font-weight: 600;
-    }
-
-    #menu_botao:hover {
-        background-color: #F8F8FF;
-        border-color: #3d4a63;
-    }
-
-    #botao_confirmar {
-        background-color: #2c3648;
-        color: #FFFFFF;
-        border: 1px solid #2c3648;
-        border-radius: 10px;
-        font-size: 18px;
-        font-weight: 600;
-    }
-
-    #botao_confirmar:hover {
-        background-color: #3d4a63;
-    }
-"""
 
 class TelaConfirmacaoCandidato(QWidget):
+    """Página de confirmação para votos válidos, nulos e em branco."""
 
     confirmar_clicado = Signal()
     cancelar_clicado = Signal()
-    voltar_menu_clicado = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.setWindowTitle("Confirmação de Voto")
+        self.setMinimumSize(800, 500)
+        self.setStyleSheet("""
+            QWidget { background: white; font-family: Arial; color: #17212f; }
+            QLabel#numero { font-size: 20px; font-weight: bold; }
+            QLabel#nome { font-size: 20px; font-weight: bold; }
+            QLabel#partido { font-size: 16px; }
+            QLabel#pergunta { font-size: 17px; font-weight: 600; }
+            QLabel#foto { border: 1px solid #2c3648; border-radius: 8px; }
+            QPushButton { background: white; border: 1px solid #2c3648;
+                border-radius: 8px; padding: 10px 25px; font-size: 16px; }
+            QPushButton#confirmar { background: #2c3648; color: white; }
+        """)
 
-        self.setObjectName("tela_confirmacao")
-        self.setAttribute(Qt.WA_StyledBackground, True)
-        self.setFixedSize(800, 500)
-        self.setWindowTitle("Confirmação de Candidato")
-        self.setStyleSheet(ESTILO_CONFIRMACAO)
-
-        self._atalhos = []
-
-        self._criar_widgets()
-        self._criar_atalhos()
-
-    def _criar_widgets(self):
-
-        layout_principal = QVBoxLayout(self)
-        layout_principal.setContentsMargins(50, 25, 50, 25)
-        layout_principal.setSpacing(15)
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(50, 25, 50, 25)
+        layout.setSpacing(12)
 
         self.foto_candidato = QLabel()
-        self.foto_candidato.setObjectName("confirmacao_foto")
-        self.foto_candidato.setFixedSize(230, 220)
+        self.foto_candidato.setObjectName("foto")
+        self.foto_candidato.setFixedSize(210, 190)
         self.foto_candidato.setAlignment(Qt.AlignCenter)
-        layout_principal.addWidget(self.foto_candidato, alignment=Qt.AlignHCenter)
-
-        layout_informacoes = QVBoxLayout()
-        layout_informacoes.setSpacing(4)
-        layout_informacoes.setAlignment(Qt.AlignTop)
+        layout.addWidget(self.foto_candidato, alignment=Qt.AlignHCenter)
 
         self.numero_candidato = QLabel()
-        self.numero_candidato.setObjectName("confirmacao_numero")
+        self.numero_candidato.setObjectName("numero")
         self.numero_candidato.setAlignment(Qt.AlignCenter)
-
         self.nome_candidato = QLabel()
-        self.nome_candidato.setObjectName("confirmacao_nome")
+        self.nome_candidato.setObjectName("nome")
         self.nome_candidato.setAlignment(Qt.AlignCenter)
-        self.nome_candidato.setWordWrap(True)
-
         self.partido_candidato = QLabel()
-        self.partido_candidato.setObjectName("confirmacao_partido")
+        self.partido_candidato.setObjectName("partido")
         self.partido_candidato.setAlignment(Qt.AlignCenter)
-        self.partido_candidato.setWordWrap(True)
+        layout.addWidget(self.numero_candidato)
+        layout.addWidget(self.nome_candidato)
+        layout.addWidget(self.partido_candidato)
 
-        layout_informacoes.addWidget(self.numero_candidato)
-        layout_informacoes.addWidget(self.nome_candidato)
-        layout_informacoes.addWidget(self.partido_candidato)
+        pergunta = QLabel("Confirma este voto?")
+        pergunta.setObjectName("pergunta")
+        pergunta.setAlignment(Qt.AlignCenter)
+        layout.addWidget(pergunta)
+        layout.addStretch()
 
-        layout_principal.addLayout(layout_informacoes, 1)
-
-        pergunta_confirmacao = QLabel("Confirmar o voto?")
-        pergunta_confirmacao.setObjectName("confirmacao_pergunta")
-        pergunta_confirmacao.setAlignment(Qt.AlignCenter)
-        layout_principal.addWidget(pergunta_confirmacao)
-
-        layout_botoes = QHBoxLayout()
-        layout_botoes.setSpacing(20)
-
+        botoes = QHBoxLayout()
         botao_cancelar = QPushButton("Cancelar")
-        botao_cancelar.setObjectName("menu_botao")
-        botao_cancelar.setCursor(Qt.PointingHandCursor)
-        botao_cancelar.setMinimumHeight(36)
-        botao_cancelar.clicked.connect(self.cancelar_clicado.emit)
+        botao_cancelar.clicked.connect(lambda checked=False: self.cancelar_clicado.emit())
+        botao_confirmar = QPushButton("Confirmar voto")
+        botao_confirmar.setObjectName("confirmar")
+        botao_confirmar.clicked.connect(lambda checked=False: self.confirmar_clicado.emit())
+        botoes.addWidget(botao_cancelar)
+        botoes.addWidget(botao_confirmar)
+        layout.addLayout(botoes)
 
-        botao_confirmar = QPushButton("Confirmar (S)")
-        botao_confirmar.setObjectName("botao_confirmar")
-        botao_confirmar.setCursor(Qt.PointingHandCursor)
-        botao_confirmar.setMinimumHeight(36)
-        botao_confirmar.clicked.connect(self._confirmar_voto)
+    def configurar_voto(self, tipo, numero="", candidato=None):
+        self.numero_candidato.setText(f"Número: {numero}" if numero else "")
+        self.foto_candidato.clear()
+        self.partido_candidato.clear()
 
-        layout_botoes.addWidget(botao_cancelar)
-        layout_botoes.addWidget(botao_confirmar)
-        layout_principal.addLayout(layout_botoes)
+        if tipo == "candidato" and candidato:
+            self.nome_candidato.setText(candidato["nome"])
+            self.partido_candidato.setText(candidato["partido"])
+            pixmap = QPixmap(candidato["foto"])
+            if not pixmap.isNull():
+                self.foto_candidato.setPixmap(
+                    pixmap.scaled(210, 190, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                )
+            else:
+                self.foto_candidato.setText("Foto indisponível")
+        elif tipo == "branco":
+            self.numero_candidato.setText("")
+            self.nome_candidato.setText("VOTO EM BRANCO")
+            self.foto_candidato.setText("BRANCO")
+        else:
+            self.nome_candidato.setText("VOTO NULO")
+            self.foto_candidato.setText(numero)
 
-        botao_voltar_menu = QPushButton("Voltar ao Menu")
-        botao_voltar_menu.setObjectName("menu_botao")
-        botao_voltar_menu.setCursor(Qt.PointingHandCursor)
-        botao_voltar_menu.setMinimumHeight(36)
-        botao_voltar_menu.clicked.connect(self.voltar_menu_clicado.emit)
-        layout_principal.addWidget(botao_voltar_menu)
-
-    def _criar_atalhos(self):
-
-        mapa_atalhos = {
-            "S": self._confirmar_voto,
-            "Esc": self.cancelar_clicado.emit,
-        }
-
-        for tecla, sinal in mapa_atalhos.items():
-            atalho = QShortcut(QKeySequence(tecla), self)
-            atalho.activated.connect(sinal)
-            self._atalhos.append(atalho)
-
-    def _confirmar_voto(self):
-        tocar_som_confirmacao()
-        self.confirmar_clicado.emit()
-
-    @Slot(str, dict)
     def exibir_candidato(self, numero, candidato):
-        """Slot que atualiza a tela com o candidato votado.
+        """Mantém compatibilidade com chamadas antigas deste componente."""
+        self.configurar_voto("candidato", numero, candidato)
 
-        Conecte diretamente ao sinal da tela de votação que carrega o
-        candidato escolhido, por exemplo:
-
-            tela_de_voto.candidato_selecionado.connect(
-                tela_confirmacao_candidato.exibir_candidato
-            )
-
-        onde `candidato_selecionado = Signal(str, dict)` é emitido pela
-        tela de votação com o número digitado e o dicionário do
-        candidato (mesmo formato de `candidatos.py`).
-        """
-        self.numero_candidato.setText(numero)
-        self.nome_candidato.setText(f"Nome: {candidato['nome']}")
-        self.partido_candidato.setText(f"Partido: {candidato['partido']}")
-        self._carregar_foto(candidato["foto"])
-
-    def _carregar_foto(self, caminho_foto):
-        caminho_completo = os.path.join(BASE_DIR, "..", caminho_foto)
-
-        pixmap = QPixmap(caminho_completo)
-
-        if pixmap.isNull():
-            self.foto_candidato.clear()
-            self.foto_candidato.setText("Foto indisponível")
-            return
-
-        self.foto_candidato.setPixmap(
-            pixmap.scaled(
-                230,
-                220,
-                Qt.KeepAspectRatio,
-                Qt.SmoothTransformation,
-            )
-        )
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

@@ -1,196 +1,104 @@
-from PySide6.QtWidgets import (
-    QWidget, QLabel, QPushButton,
-    QGridLayout, QVBoxLayout, QHBoxLayout, QFrame
-)
-from PySide6.QtGui import QPixmap, QFont
 from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import (
+    QFrame,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QMessageBox,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+)
 
-from Backend.confirmar import confirmar
-from Backend.corrigir import corrigir
-from Backend.voto_branco import voto_branco
-from Backend.candidatos import candidatos
+from Backend.urna_backend import UrnaBackend, urna_backend
+
 
 ESTILOS = """
-QWidget {
-    background-color: #EEF2F5;
-    font-family: Arial;
-}
-
-QLabel#titulo {
-    color: #334E68;
-    font-size: 28px;
-    font-weight: bold;
-    padding: 15px;
-}
-
-QLabel {
-    color: #334E68;
-}
-
-QPushButton#numericos {
-    background-color: #E8EDF3;
-    color: #334E68;
-    border: 1px solid #C7D0D9;
-    border-radius: 8px;
-    font-size: 22px;
-    font-weight: bold;
-}
-
-QPushButton#numericos:hover {
-    background-color: #DDE6EE;
-}
-
-QPushButton#btn-branco {
-    background-color: white;
-    border: 1px solid #C7D0D9;
-    border-radius: 8px;
-    color: #334E68;
-    font-weight: bold;
-}
-
-QPushButton#btn-corrige {
-    background-color: #F4B64E;
-    border: none;
-    border-radius: 8px;
-    color: #334E68;
-    font-weight: bold;
-}
-
-QPushButton#btn-confirma {
-    background-color: #3F9D8B;
-    border: none;
-    border-radius: 8px;
-    color: white;
-    font-weight: bold;
-}
-
-QWidget#teclado-widget {
-    background-color: white;
-    border: 1px solid #D6DDE4;
-    border-radius: 10px;
-    padding: 20px;
-}
-
-QLabel#foto-label {
-    background-color: #F7F9FB;
-    border: 1px solid #D6DDE4;
-    border-radius: 8px;
-}
-
-QFrame#painel-esquerdo {
-    background-color: white;
-    border: 1px solid #D6DDE4;
-    border-radius: 10px;
-}
+QWidget { background-color: #EEF2F5; font-family: Arial; }
+QLabel { color: #334E68; }
+QLabel#titulo { color: #334E68; font-size: 28px; font-weight: bold; padding: 15px; }
+QPushButton#numericos { background: #E8EDF3; color: #334E68; border: 1px solid #C7D0D9;
+    border-radius: 8px; font-size: 22px; font-weight: bold; }
+QPushButton#numericos:hover { background: #DDE6EE; }
+QPushButton#btn-branco { background: white; border: 1px solid #C7D0D9;
+    border-radius: 8px; color: #334E68; font-weight: bold; }
+QPushButton#btn-corrige { background: #F4B64E; border: none; border-radius: 8px;
+    color: #334E68; font-weight: bold; }
+QPushButton#btn-confirma { background: #3F9D8B; border: none; border-radius: 8px;
+    color: white; font-weight: bold; }
+QWidget#teclado-widget { background: white; border: 1px solid #D6DDE4; border-radius: 10px; padding: 20px; }
+QLabel#foto-label { background: #F7F9FB; border: 1px solid #D6DDE4; border-radius: 8px; }
+QFrame#painel-esquerdo { background: white; border: 1px solid #D6DDE4; border-radius: 10px; }
 """
 
-class UrnaEletronica(QWidget):
 
-    votacao_finalizada = Signal()
-    
-    def __init__(self, titulo_eleitor):
+class UrnaEletronica(QWidget):
+    voto_solicitado = Signal(str, str)
+
+    def __init__(self, titulo_eleitor: str, backend: UrnaBackend = urna_backend):
         super().__init__()
+        self.backend = backend
+        self.titulo_eleitor = backend.normalizar_titulo(titulo_eleitor)
+        self.numero_digitado = ""
 
         self.setWindowTitle("Urna Eletrônica")
         self.setFixedSize(800, 500)
+        self._criar_interface()
 
-        self.titulo_eleitor = titulo_eleitor
-
-        self.votos = {
-            "01": 0,
-            "02": 0,
-            "03": 0,
-            "nulo": 0,
-            "branco": 0
-        }
-
-        self.numero_digitado = ""
-        self.tela_confirmacao = None
-
-        self.criar_interface()
-
-    fechada = Signal()
-
-    def closeEvent(self, event):
-        self.fechada.emit()
-        super().closeEvent(event)
-
-    def criar_interface(self):
+    def _criar_interface(self):
         self.setStyleSheet(ESTILOS)
-        layout_principal = QHBoxLayout()
+        layout_principal = QHBoxLayout(self)
 
         painel_esquerdo = QFrame()
         painel_esquerdo.setObjectName("painel-esquerdo")
-
-        tela = QVBoxLayout(painel_esquerdo)
+        painel = QVBoxLayout(painel_esquerdo)
 
         titulo = QLabel("SEU VOTO PARA")
         titulo.setAlignment(Qt.AlignCenter)
-        titulo.setFont(QFont("Arial", 18))
         titulo.setObjectName("titulo")
-
         self.numero_label = QLabel("")
         self.numero_label.setAlignment(Qt.AlignCenter)
-        self.numero_label.setFont(QFont("Arial", 30))
-
+        self.numero_label.setStyleSheet("font-size: 30px;")
         self.nome_label = QLabel("")
+        self.nome_label.setAlignment(Qt.AlignCenter)
         self.partido_label = QLabel("")
-
-        self.nome_label.setFont(QFont("Arial", 14))
-        self.partido_label.setFont(QFont("Arial", 14))
-
+        self.partido_label.setAlignment(Qt.AlignCenter)
         self.foto_label = QLabel()
-        self.foto_label.setFixedSize(200, 250)
-        self.foto_label.setObjectName ("foto-label")
+        self.foto_label.setFixedSize(200, 230)
+        self.foto_label.setAlignment(Qt.AlignCenter)
+        self.foto_label.setObjectName("foto-label")
 
-        tela.addWidget(titulo)
-        tela.addWidget(self.numero_label)
-        tela.addWidget(self.nome_label)
-        tela.addWidget(self.partido_label)
-        tela.addWidget(self.foto_label, alignment=Qt.AlignCenter)
+        for widget in (titulo, self.numero_label, self.nome_label, self.partido_label):
+            painel.addWidget(widget)
+        painel.addWidget(self.foto_label, alignment=Qt.AlignCenter)
 
         teclado = QGridLayout()
         teclado.setContentsMargins(20, 0, 20, 0)
+        for indice, digito in enumerate("123456789"):
+            linha, coluna = divmod(indice, 3)
+            self._adicionar_botao_numero(teclado, digito, linha, coluna)
+        self._adicionar_botao_numero(teclado, "0", 3, 1)
 
-        numeros = [
-            ('1', 0, 0), ('2', 0, 1), ('3', 0, 2),
-            ('4', 1, 0), ('5', 1, 1), ('6', 1, 2),
-            ('7', 2, 0), ('8', 2, 1), ('9', 2, 2),
-            ('0', 3, 1)
-        ]
+        botao_branco = QPushButton("BRANCO")
+        botao_branco.setFixedSize(90, 55)
+        botao_branco.setObjectName("btn-branco")
+        botao_branco.clicked.connect(lambda: self.voto_solicitado.emit("branco", ""))
 
-        for texto, linha, coluna in numeros:
-            botao = QPushButton(texto)
-            botao.setObjectName("numericos")
-            botao.setCursor(Qt.PointingHandCursor)
-            botao.setFixedSize(90, 55)
-            botao.clicked.connect(
-                lambda checked, t=texto: self.digitar_numero(t)
-            )
-            teclado.addWidget(botao, linha, coluna)
+        botao_corrigir = QPushButton("CORRIGE")
+        botao_corrigir.setFixedSize(90, 55)
+        botao_corrigir.setObjectName("btn-corrige")
+        botao_corrigir.clicked.connect(self.corrigir)
 
-        branco = QPushButton("BRANCO")
-        branco.setFixedSize(90, 55)
-        branco.setObjectName("btn-branco")
-        branco.setCursor(Qt.PointingHandCursor)
-        branco.clicked.connect(lambda: voto_branco(self))
+        botao_confirmar = QPushButton("CONFIRMA")
+        botao_confirmar.setFixedSize(90, 55)
+        botao_confirmar.setObjectName("btn-confirma")
+        botao_confirmar.clicked.connect(self.confirmar)
 
-        corrige = QPushButton("CORRIGE")
-        corrige.setFixedSize(90, 55)
-        corrige.setObjectName("btn-corrige")
-        corrige.setCursor(Qt.PointingHandCursor)
-        corrige.clicked.connect(lambda: corrigir(self))
+        teclado.addWidget(botao_branco, 4, 0)
+        teclado.addWidget(botao_corrigir, 4, 1)
+        teclado.addWidget(botao_confirmar, 4, 2)
 
-        confirma = QPushButton("CONFIRMA")
-        confirma.setFixedSize(90, 55)
-        confirma.setObjectName("btn-confirma")
-        confirma.setCursor(Qt.PointingHandCursor)
-        confirma.clicked.connect(lambda: confirmar(self))
-
-        teclado.addWidget(branco, 4, 0)
-        teclado.addWidget(corrige, 4, 1)
-        teclado.addWidget(confirma, 4, 2)
-        
         teclado_widget = QWidget()
         teclado_widget.setObjectName("teclado-widget")
         teclado_widget.setLayout(teclado)
@@ -199,32 +107,53 @@ class UrnaEletronica(QWidget):
         layout_principal.addWidget(painel_esquerdo, 2)
         layout_principal.addWidget(teclado_widget, 1)
 
-        self.setLayout(layout_principal)
+    def _adicionar_botao_numero(self, teclado, digito, linha, coluna):
+        botao = QPushButton(digito)
+        botao.setObjectName("numericos")
+        botao.setFixedSize(90, 55)
+        botao.clicked.connect(lambda checked=False, valor=digito: self.digitar_numero(valor))
+        teclado.addWidget(botao, linha, coluna)
 
-    def digitar_numero(self, numero):
-        if len(self.numero_digitado) < 2:
-            self.numero_digitado += numero
-            self.numero_label.setText(self.numero_digitado)
+    def digitar_numero(self, numero: str):
+        tamanho = self.backend.obter_tamanho_codigo_candidato()
+        if len(self.numero_digitado) >= tamanho:
+            return
+        self.numero_digitado += numero
+        self.numero_label.setText(self.numero_digitado)
+        self.nome_label.clear()
+        self.partido_label.clear()
+        self.foto_label.clear()
 
-            if len(self.numero_digitado) == 2:
-                self.mostrar_candidato()
+        if len(self.numero_digitado) == tamanho:
+            self.mostrar_candidato()
 
     def mostrar_candidato(self):
-        if self.numero_digitado in candidatos:
-            candidato = candidatos[self.numero_digitado]
-
-            self.nome_label.setText(candidato["nome"])
-            self.partido_label.setText(candidato["partido"])
-
-            pixmap = QPixmap(candidato["foto"])
-            self.foto_label.setPixmap(
-                pixmap.scaled(
-                    self.foto_label.size(),
-                    Qt.KeepAspectRatio
-                )
-            )
-            
-        else:
+        candidato = self.backend.candidatos.get(self.numero_digitado)
+        if candidato is None:
             self.nome_label.setText("VOTO NULO")
-            self.partido_label.setText("")
-            self.foto_label.clear()
+            return
+        self.nome_label.setText(candidato["nome"])
+        self.partido_label.setText(candidato["partido"])
+        pixmap = QPixmap(candidato["foto"])
+        if not pixmap.isNull():
+            self.foto_label.setPixmap(
+                pixmap.scaled(self.foto_label.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            )
+
+    def confirmar(self):
+        if not self.numero_digitado:
+            QMessageBox.warning(self, "Atenção", "Digite o número do candidato ou escolha BRANCO.")
+            return
+        tamanho = self.backend.obter_tamanho_codigo_candidato()
+        if len(self.numero_digitado) != tamanho:
+            QMessageBox.warning(self, "Atenção", f"Digite os {tamanho} dígitos do número.")
+            return
+        tipo = "candidato" if self.numero_digitado in self.backend.candidatos else "nulo"
+        self.voto_solicitado.emit(tipo, self.numero_digitado)
+
+    def corrigir(self):
+        self.numero_digitado = ""
+        self.numero_label.clear()
+        self.nome_label.clear()
+        self.partido_label.clear()
+        self.foto_label.clear()
