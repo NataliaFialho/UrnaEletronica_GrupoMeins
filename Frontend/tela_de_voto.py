@@ -15,23 +15,90 @@ from Backend.urna_backend import UrnaBackend, urna_backend
 
 
 ESTILOS = """
-QWidget { background-color: #EEF2F5; font-family: Arial; }
-QLabel { color: #334E68; }
-QLabel#titulo { color: #334E68; font-size: 28px; font-weight: bold; padding: 15px; }
-QPushButton#numericos { background: #E8EDF3; color: #334E68; border: 1px solid #C7D0D9;
-    border-radius: 8px; font-size: 22px; font-weight: bold; }
-QPushButton#numericos:hover { background: #DDE6EE; }
-QPushButton#btn-branco { background: white; border: 1px solid #C7D0D9;
-    border-radius: 8px; color: #334E68; font-weight: bold; }
-QPushButton#btn-corrige { background: #F4B64E; border: none; border-radius: 8px;
-    color: #334E68; font-weight: bold; }
-QPushButton#btn-confirma { background: #3F9D8B; border: none; border-radius: 8px;
-    color: white; font-weight: bold; }
-QWidget#teclado-widget { background: white; border: 1px solid #D6DDE4; border-radius: 10px; padding: 20px; }
-QLabel#foto-label { background: #F7F9FB; border: 1px solid #D6DDE4; border-radius: 8px; }
-QFrame#painel-esquerdo { background: white; border: 1px solid #D6DDE4; border-radius: 10px; }
-"""
+    QWidget {
+        background-color: #F4F8FB;
+        font-family: Arial;
+        }
 
+    QLabel {
+        color: #334E68;
+        }
+
+    QLabel#titulo {
+        color: #334E68;
+        font-size: 28px;
+        font-weight: bold;
+        padding: 15px;
+        }
+
+    QPushButton#numericos {
+        background: #E8EDF3;
+        color: #334E68;
+        border: 1px solid #C0CCD6;
+        border-radius: 8px;
+        font-size: 22px;
+        font-weight: bold;
+        }
+
+    QPushButton#numericos:hover {
+        background: #b6c1d1;
+        }
+
+    QPushButton#btn-branco {
+        background: #FFFFFF;
+        border: 1px solid #C0CCD6;
+        border-radius: 8px;
+        color: #334E68;
+        font-weight: bold;
+        }
+
+    QPushButton#btn-branco:hover {
+        background: #F0F0F0;
+        }
+
+    QPushButton#btn-corrige {
+        background: #F4B64E;
+        border: none;
+        border-radius: 8px;
+        color: #334E68;
+        font-weight: bold;
+        }
+
+    QPushButton#btn-corrige:hover {
+        background: #E6AB4A;
+        }
+
+    QPushButton#btn-confirma {
+        background: #3F9D8B;
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-weight: bold;
+        }
+
+    QPushButton#btn-confirma:hover {
+        background: #3A9181;
+        }
+        
+    QWidget#teclado-widget {
+        background: white;
+        border: 1px solid #D6DDE4;
+        border-radius: 10px;
+        padding: 20px;
+        }
+
+    QLabel#foto-label {
+        background: #F7F9FB;
+        border: 1px solid #D6DDE4;
+        border-radius: 8px;
+        }
+        
+    QFrame#painel-esquerdo {
+        background: white;
+        border: 1px solid #D6DDE4;
+        border-radius: 10px;
+        }
+    """
 
 class UrnaEletronica(QWidget):
     voto_solicitado = Signal(str, str)

@@ -1,4 +1,4 @@
-import os
+import os, sys
 
 from PySide6.QtCore import Qt, QDateTime, Signal
 from PySide6.QtGui import QIcon
@@ -11,7 +11,6 @@ from PySide6.QtWidgets import (
 )
 
 from Backend.urna_backend import UrnaBackend, urna_backend
-
 
 class TelaZeresima(QWidget):
     zeresima_confirmada = Signal()
@@ -27,12 +26,59 @@ class TelaZeresima(QWidget):
         self.setWindowTitle("Relatório Inicial (Zerésima)")
         self.setWindowIcon(QIcon(icone))
         self.setStyleSheet("""
-            QWidget { font-family: Arial; font-size: 14px; }
-            QLabel#titulo { color: #000; font-size: 30px; font-weight: bold; }
-            QLabel#data { color: #333; font-weight: bold; }
-            QPushButton { background: white; border: 1px solid #2c3648;
-                border-radius: 8px; padding: 10px; font-size: 15px; }
-        """)
+            QWidget {
+                    font-family: Arial; 
+                    font-size: 16px; 
+                    background: #F4F8FB;
+                }
+                
+                QLabel {
+                    background-color: white;
+                }
+
+                QLabel#titulo {
+                    background-color: transparent;
+                    color: #283A50;
+                    font-size: 34px;
+                    font-weight: bold;
+                }
+
+                QLabel#data {
+                    background-color: transparent;
+                    color: #283A50;
+                    font-size: 13px;
+                    font-weight: bold;
+                }
+
+                #info_zerezima {
+                    padding: 10px;
+                    border-style: solid;
+                    border-width: 0.5px;
+                    border-color: #283A50;
+                }    
+
+                QPushButton {
+                    height: 30px;
+                    background: #FFFFFF;
+                    color: #283A50;
+                    border: 1px solid #C0CCD6;
+                    border-radius: 10px;
+                    font-size: 17px;
+                    font-weight: 600;
+                    text-align: center;
+                    padding-left: 24px;
+                }
+
+                QPushButton:hover:enabled {
+                    background: #b6c1d1;
+                }
+
+                QPushButton:disabled {
+                    background: #e4e4e4;
+                    color: #888;
+                    border-color: #bbb;
+                }
+            """)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(25, 20, 25, 20)
@@ -90,13 +136,3 @@ class TelaZeresima(QWidget):
             f"Eleitores aptos: {boletim.eleitores_aptos}\n"
             f"{eleitores}"
         )
-
-
-if __name__ == "__main__":
-    from PySide6.QtWidgets import QApplication
-    import sys
-
-    app = QApplication(sys.argv)
-    janela = TelaZeresima()
-    janela.show()
-    sys.exit(app.exec())
