@@ -13,12 +13,14 @@ ESTILO_MENU = """
             color: #283A50;
             font-size: 34px;
             font-weight: bold;
+            background-color: transparent;
             }
 
             QLabel#subtitulo {
             color: #283A50;
             font-size: 13px;
             font-weight: bold;
+            background-color: transparent;
             }
 
             QPushButton {

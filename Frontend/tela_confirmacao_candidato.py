@@ -16,15 +16,49 @@ class TelaConfirmacaoCandidato(QWidget):
         self.setWindowTitle("Confirmação de Voto")
         self.setMinimumSize(800, 500)
         self.setStyleSheet("""
-            QWidget { background: white; font-family: Arial; color: #17212f; }
-            QLabel#numero { font-size: 20px; font-weight: bold; }
-            QLabel#nome { font-size: 20px; font-weight: bold; }
-            QLabel#partido { font-size: 16px; }
-            QLabel#pergunta { font-size: 17px; font-weight: 600; }
-            QLabel#foto { border: 1px solid #2c3648; border-radius: 8px; }
-            QPushButton { background: white; border: 1px solid #2c3648;
-                border-radius: 8px; padding: 10px 25px; font-size: 16px; }
-            QPushButton#confirmar { background: #2c3648; color: white; }
+            QWidget {
+                background: transparent;
+                font-family: Arial;
+                color: #1a2a40;
+            }
+            QLabel#numero {
+                font-size: 20px;
+                font-weight: bold;
+            }
+            QLabel#nome {
+                font-size: 20px;
+                font-weight: bold;
+            }
+            QLabel#partido {
+                font-size: 16px;
+            }
+            QLabel#pergunta {
+                font-size: 17px;
+                font-weight: 600;
+            }
+            QLabel#foto {
+                border: 1px solid #2c3648;
+                border-radius: 8px;
+            }
+            QPushButton {
+                background: white;
+                border: 1px solid #d1d5db;
+                border-radius: 8px;
+                padding: 10px 25px;
+                font-size: 16px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #e5e7eb;
+            }
+            QPushButton#confirmar {
+                background: #6486aa;
+                color: white;
+                border: none;
+            }
+            QPushButton#confirmar:hover {
+                background-color: #4a6b8c;
+            }
         """)
 
         layout = QVBoxLayout(self)
@@ -92,10 +126,3 @@ class TelaConfirmacaoCandidato(QWidget):
     def exibir_candidato(self, numero, candidato):
         """Mantém compatibilidade com chamadas antigas deste componente."""
         self.configurar_voto("candidato", numero, candidato)
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    janela = TelaConfirmacaoCandidato()
-    janela.show()
-    sys.exit(app.exec())

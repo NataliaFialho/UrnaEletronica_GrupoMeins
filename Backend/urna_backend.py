@@ -180,5 +180,4 @@ class UrnaBackend:
             situacao_eleitores=situacao,
         )
 
-
 urna_backend = UrnaBackend()
