@@ -30,7 +30,7 @@ class JanelaPrincipal(QWidget):
 
         self.stack = QStackedWidget()
         for tela in (self.menu, self.zeresima, self.boletim_urna, self.informar_titulo, self.confirmacao):
-            self.stack.addWidget(tela)
+            self._adicionar_tela(tela)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -39,6 +39,21 @@ class JanelaPrincipal(QWidget):
         self._conectar_sinais()
         self._atualizar_menu()
         self.stack.setCurrentWidget(self.menu)
+
+    def _adicionar_tela(self, tela):
+        """Registra uma tela e reaplica seu QSS já na hierarquia do stack."""
+        self.stack.addWidget(tela)
+
+        # Cada tela define seu próprio stylesheet antes de ser anexada ao stack.
+        # Reaplicá-lo depois do reparent garante que o Qt recalcule o estilo de
+        # todos os widgets descendentes na hierarquia final da aplicação.
+        widgets = (tela, *tela.findChildren(QWidget))
+        for widget in widgets:
+            estilo = widget.styleSheet()
+            if estilo:
+                widget.setStyleSheet("")
+                widget.setStyleSheet(estilo)
+            widget.ensurePolished()
 
     def _conectar_sinais(self):
         self.menu.relatorio_inicial_clicado.connect(self.ir_para_zeresima)
@@ -92,7 +107,7 @@ class JanelaPrincipal(QWidget):
         self.titulo_atual = self.backend.normalizar_titulo(titulo)
         self.tela_urna = UrnaEletronica(self.titulo_atual, self.backend)
         self.tela_urna.voto_solicitado.connect(self.solicitar_confirmacao_voto)
-        self.stack.addWidget(self.tela_urna)
+        self._adicionar_tela(self.tela_urna)
         self.stack.setCurrentWidget(self.tela_urna)
 
     def solicitar_confirmacao_voto(self, tipo, numero):
@@ -156,10 +171,10 @@ class JanelaPrincipal(QWidget):
             self,
             "Encerrar votação",
             "Deseja encerrar a eleição? Não será mais possível registrar votos.",
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No,
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No,
         )
-        if resposta != QMessageBox.Yes:
+        if resposta != QMessageBox.StandardButton.Yes:
             return
         ok, mensagem = self.backend.encerrar_eleicao()
         if not ok:
