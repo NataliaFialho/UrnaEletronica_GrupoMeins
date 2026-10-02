@@ -1,25 +1,25 @@
 eleitores = {
-    "1234567890": {
+    "12": {
         "nome": "Enzo Nogueira",
         "votou": False,
     },
-    "9876543210": {
+    "34": {
         "nome": "Victor Da Silva",
         "votou": False,
     },
-    "4567891230": {
+    "56": {
         "nome": "Adalberto Marinho",
         "votou": False,
     },
-    "7891234560": {
+    "78": {
         "nome": "Natalia Fialho",
         "votou": False,
     },
-    "32109876543": {
+    "90": {
         "nome": "Hillgner Oliveira",
         "votou": False,
     },
-    "6543210987": {
+    "01": {
         "nome": "Gabriel Oliveira",
         "votou": False,
     }

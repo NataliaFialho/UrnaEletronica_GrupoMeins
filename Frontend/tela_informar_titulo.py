@@ -198,7 +198,7 @@ class TelaTituloEleitor(QWidget):
         titulo = self.input_titulo.text().strip()
  
         if titulo not in eleitores:
-            print("Título não encontrado.")
+            PopUps.titulo_invalido(None)
             return
  
         if eleitores[titulo]["votou"]:

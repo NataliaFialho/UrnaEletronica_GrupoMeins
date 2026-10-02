@@ -86,7 +86,6 @@ class JanelaPrincipal(QWidget):
     def abrir_urna(self, titulo):
         ok, mensagem = self.backend.validar_eleitor_para_votar(titulo)
         if not ok:
-            QMessageBox.warning(self, "Voto não permitido", mensagem)
             return
 
         self.titulo_atual = self.backend.normalizar_titulo(titulo)
