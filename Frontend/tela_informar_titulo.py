@@ -1,5 +1,5 @@
 import os
-from PySide6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout,
+from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout,
                                QLabel, QLineEdit, QPushButton, QFrame, QSpacerItem, QSizePolicy,
                                QMessageBox)
 from PySide6.QtCore import Qt, Signal
@@ -93,7 +93,6 @@ class TelaTituloEleitor(QWidget):
 
         self.eleitores = eleitores
      
-        self.setWindowTitle("Urna Eletrônica - Informar Título") 
         self.setMinimumSize(800, 500) 
         self.setStyleSheet("background-color: #f0f4f8;")  
  

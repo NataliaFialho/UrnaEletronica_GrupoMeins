@@ -1,6 +1,4 @@
-import sys
-
-from PySide6.QtWidgets import  QApplication, QMessageBox
+from PySide6.QtWidgets import QMessageBox
 from PySide6.QtCore import Qt
 
 
@@ -145,17 +143,3 @@ class PopUps(QMessageBox):
             "Voto não permitido",
             "Este título é inválido.\nVeja se foi digitado corretamente."
         )
-
-
-
-def main():
-
-    app = QApplication(sys.argv)
-
-    PopUps.zeresima_nao_realizada(None)
-
-    sys.exit(app.exec())
-
-
-if __name__ == "__main__":
-    main()

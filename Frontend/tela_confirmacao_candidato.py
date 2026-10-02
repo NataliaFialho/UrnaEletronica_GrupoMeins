@@ -1,8 +1,6 @@
-import sys
-
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QApplication, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
+from PySide6.QtWidgets import QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
 
 
 class TelaConfirmacaoCandidato(QWidget):
@@ -13,7 +11,6 @@ class TelaConfirmacaoCandidato(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Confirmação de Voto")
         self.setMinimumSize(800, 500)
         self.setStyleSheet("""
             QWidget {
