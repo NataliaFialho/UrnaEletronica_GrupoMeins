@@ -1,6 +1,5 @@
 from PySide6.QtWidgets import QMessageBox
 
-
 def confirmar(urna):
     """Abre a etapa de confirmação; o backend só registra após aceite."""
     numero = urna.numero_digitado

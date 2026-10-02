@@ -1,7 +1,6 @@
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtCore import Qt
 
-
 ESTILO_POPUP = """
 
     QMessageBox {
@@ -9,6 +8,7 @@ ESTILO_POPUP = """
     }
 
     QMessageBox QLabel {
+        background-color: transparent;
         color: #000000;
         padding: 10px;
         font-weight: normal;
@@ -31,7 +31,6 @@ ESTILO_POPUP = """
         padding: 10px 30px;
         min-width: 80px;
     }
-
     
     QMessageBox QPushButton:hover {
         background-color: #F8F8FF;
@@ -46,7 +45,6 @@ ESTILO_POPUP = """
     }
 
 """
-
 
 class PopUps(QMessageBox):
    
