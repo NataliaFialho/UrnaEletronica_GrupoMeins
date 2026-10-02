@@ -1,7 +1,6 @@
-import os, sys
+import os
 
 from PySide6.QtCore import Qt, QDateTime, Signal
-from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QLabel,
     QPushButton,
@@ -23,8 +22,6 @@ class TelaZeresima(QWidget):
         raiz_projeto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         icone = os.path.join(raiz_projeto, "Imagens", "icone_zeresima_preto.png")
         self.setFixedSize(800, 500)
-        self.setWindowTitle("Relatório Inicial (Zerésima)")
-        self.setWindowIcon(QIcon(icone))
         self.setStyleSheet("""
             QWidget {
                 font-family: Arial; 

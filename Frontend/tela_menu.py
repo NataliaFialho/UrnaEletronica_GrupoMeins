@@ -1,6 +1,5 @@
-import sys
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtWidgets import QLabel, QPushButton, QVBoxLayout, QWidget, QApplication
+from PySide6.QtWidgets import QLabel, QPushButton, QVBoxLayout, QWidget
 
 ESTILO_MENU = """
             QWidget {

@@ -109,7 +109,6 @@ class UrnaEletronica(QWidget):
         self.titulo_eleitor = backend.normalizar_titulo(titulo_eleitor)
         self.numero_digitado = ""
 
-        self.setWindowTitle("Urna Eletrônica")
         self.setFixedSize(800, 500)
         self._criar_interface()
 

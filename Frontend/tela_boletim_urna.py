@@ -1,7 +1,6 @@
 import os
 
 from PySide6.QtCore import Qt, QDateTime, Signal
-from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QLabel, QPushButton, QScrollArea, QVBoxLayout, QWidget
 
 from Backend.urna_backend import UrnaBackend, urna_backend
@@ -15,8 +14,6 @@ class TelaBoletimUrna(QWidget):
 
         raiz_projeto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         icone = os.path.join(raiz_projeto, "Imagens", "icone_boletim_urna.png")
-        self.setWindowTitle("Boletim de Urna")
-        self.setWindowIcon(QIcon(icone))
         self.setStyleSheet("""
             QWidget {
                 font-family: Arial;
