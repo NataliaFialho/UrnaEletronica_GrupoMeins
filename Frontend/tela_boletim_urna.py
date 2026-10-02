@@ -86,19 +86,44 @@ class TelaBoletimUrna(QWidget):
     def atualizar_dados(self):
         agora = QDateTime.currentDateTime().toString("dd/MM/yyyy, HH:mm:ss")
         self.data_horario.setText(f"Data e horário da emissão: {agora}")
-        boletim = self.backend.boletim_atual()
 
-        linhas_candidatos = [
-            f"{codigo} - {self.backend.candidatos[codigo]['nome']}: {votos} voto(s)"
-            for codigo, votos in boletim.votos_por_candidato.items()
-        ]
+        boletim = self.backend.boletim_atual()
+        total_votos = boletim.votos_totais
+
+        linhas_candidatos = []
+
+        for codigo, votos in boletim.votos_por_candidato.items():
+            porcentagem = (
+                (votos / total_votos) * 100
+                if total_votos > 0 else 0
+            )
+
+            linhas_candidatos.append(
+                f"{codigo} - {self.backend.candidatos[codigo]['nome']}: "
+                f"{votos} voto(s) ({porcentagem:.2f}%)"
+            )
+
+        porcentagem_brancos = (
+            (boletim.votos_brancos / total_votos) * 100
+            if total_votos > 0 else 0
+        )
+
+        porcentagem_nulos = (
+            (boletim.votos_nulos / total_votos) * 100
+            if total_votos > 0 else 0
+        )
+
         if boletim.empate:
             resultado = "Empate entre: " + ", ".join(
-                self.backend.candidatos[codigo]["nome"] for codigo in boletim.vencedor
+                self.backend.candidatos[codigo]["nome"]
+                for codigo in boletim.vencedor
             )
         elif boletim.vencedor:
             codigo = boletim.vencedor[0]
-            resultado = f"Vencedor: {self.backend.candidatos[codigo]['nome']} ({boletim.votos_por_candidato[codigo]} voto(s))"
+            resultado = (
+                f"Vencedor: {self.backend.candidatos[codigo]['nome']} "
+                f"({boletim.votos_por_candidato[codigo]} voto(s))"
+            )
         else:
             resultado = "Sem votos válidos para candidato."
 
@@ -106,8 +131,8 @@ class TelaBoletimUrna(QWidget):
             f"{resultado}\n\n"
             "Votos por candidato\n"
             f"{chr(10).join(linhas_candidatos)}\n\n"
-            f"Votos em branco: {boletim.votos_brancos}\n"
-            f"Votos nulos: {boletim.votos_nulos}\n"
+            f"Votos em branco: {boletim.votos_brancos} ({porcentagem_brancos:.2f}%)\n"
+            f"Votos nulos: {boletim.votos_nulos} ({porcentagem_nulos:.2f}%)\n"
             f"Votos totais: {boletim.votos_totais}\n\n"
             f"Eleitores aptos: {boletim.eleitores_aptos}\n"
             f"Comparecimentos: {boletim.comparecimentos}\n"

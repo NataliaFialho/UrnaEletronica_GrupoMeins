@@ -6,7 +6,6 @@ from typing import Optional
 from Backend.candidatos import candidatos as CANDIDATOS
 from Backend.eleitor import eleitores as ELEITORES
 
-
 @dataclass(frozen=True)
 class Boletim:
     votos_por_candidato: dict[str, int]
